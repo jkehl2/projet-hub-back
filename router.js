@@ -14,6 +14,9 @@ const bcrypt = require('bcrypt');
 
 /** Gestion des utilisateurs */
 
+router.get('/',async (req, res) => {
+    res.send('Bienvenue sur l\'API de localhub')
+})
 
 
 router.post('/login',async (req, res) => {
