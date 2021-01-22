@@ -1,0 +1,385 @@
+
+#--------------------------PROJECTS---------------------------------------
+
+#OK Return all projects with all datas without filtering
+{projects{
+      id
+      title
+      description
+      created_at
+      expiration_date
+      location
+      lat
+      long
+      image
+      archived
+      author{
+        name
+        email
+      }
+      needs{
+        title
+        description
+      }
+      comments{
+        content
+      }
+}
+}
+# No query variables required
+ 
+#-------------------------------------------------
+
+#OK Return one project with all datas according one specified Id
+
+query GetProjectByID($id: ID!) {
+  project(id: $id) {
+      id
+      title
+      description
+      created_at
+      expiration_date
+      location
+      lat
+      long
+      image
+      archived
+      author{
+        name
+        email
+      }
+      needs{
+        title
+        description
+      }
+      comments{
+        content
+      }
+  }
+}
+#query variables
+{
+	"id": 1
+}
+#-------------------------------------------------
+
+#OK Return projects related to Author Id
+
+query GetProjectsByAuthorID ($id: ID!){
+  user(id: $id){
+    projects{
+      id
+      title
+      description
+      created_at
+      expiration_date
+      location
+      lat
+      long
+
+      image
+      archived
+      author{
+        name
+        email
+      }
+    }
+  }
+}
+#query variables
+{
+	"id": 1
+}
+#-------------------------------------------------
+
+#OK Return projects related to geo position and scope (in meters)
+
+query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: Boolean!) {
+  projectsByGeo(lat: $lat, long: $long, scope: $scope, archived: $archived) {
+    title
+    description
+    location
+    lat
+    long
+    author{
+      name
+      email
+    }
+  }
+  
+}
+#query variables
+{
+	"lat": 2,
+	"long": 1.9,
+	"scope": 20000,
+  "archived": false
+}
+#-------------------------------------------------
+
+
+
+
+
+#-------------------------------------------------
+#-------------------------------------------------
+#-------------------------------------------------
+
+
+             # NOT OK
+
+
+
+
+
+# Return all favorite projects related to specified user id (as follower)
+
+query GetFavoritesByUserID ($id: ID!){
+  user(id: $id){
+    favourite_projects{
+      id
+      title
+      description
+      created_at
+      expiration_date
+      location
+      lat
+      long
+      scope
+      west
+      east
+      north
+      south
+      image
+      archived
+      author{
+        name
+        email
+      }
+    }
+  }
+}
+
+
+# Create new Project & return created project
+
+mutation createProject (
+  $title: String!,
+  $description: String!,
+  $expiration_date:String!,
+  $location: String!,
+  $scope: Float!,
+  $lat: Float!,
+  $long: Float!,
+  $image: String,
+  $file: String
+  $author: ID!,
+){
+  insertProject(
+    title: $title,
+    description: $description,
+    expiration_date: $expiration_date,
+    location: $location,
+    scope: $scope,
+    lat: $lat,
+    long: $long,
+    image: $image,
+    file: $file,
+    author: $author
+  ){
+    id
+    title
+    description
+    expiration_date
+    location
+    lat
+    long
+    scope
+    west
+    east
+    north
+    south
+    image
+    file
+    archived
+    author{
+      name
+      email
+    }
+  }
+}
+
+
+# Update Project with specified Id & return updated projected
+
+mutation updateProject (
+  $id: ID!,
+  $title: String!,
+  $description: String!,
+  $expiration_date:String!,
+  $location: String!,
+  $scope: Float!,
+  $lat: Float!,
+  $long: Float!,
+  $image: String,
+  $file: String,
+  $author: ID!,
+){
+  updateProject(
+    id: $id,
+    title: $title,
+    description: $description,
+    expiration_date: $expiration_date,
+    location: $location,
+    scope: $scope,
+    lat: $lat,
+    long: $long,
+    image: $image,
+    file: $file
+    author: $author
+  ){
+    id
+    title
+    description
+    expiration_date
+    location
+    lat
+    long
+    scope
+    west
+    east
+    north
+    south
+    image
+    file
+    archived
+    author{
+      name
+      email
+    }
+  }
+}
+
+
+# delete project with specified ID & return message
+
+mutation deleteProject($id: ID!) {
+  deleteProject(id: $id) {
+    msg
+  }
+}
+
+
+# archive project with specified ID & return archived project
+
+mutation archiveProject($id: ID!) {
+  archiveProject(id: $id) {
+    id
+    title
+    description
+    expiration_date
+    location
+    lat
+    long
+    scope
+    west
+    east
+    north
+    south
+    image
+    file
+    archived
+    author{
+      name
+      email
+    }
+    comments{
+      description
+      author{
+        name
+      }
+    }
+  }
+}
+
+
+#---------------------------NEEDS-----------------------------------------
+
+# Create new need on specified project id & return created need
+
+mutation createNeed($title: String!, $description: String!, $project_id: ID!) {
+  insertNeed(title: $title, description: $description, project_id: $project_id) {
+    id
+    title
+    description
+    project_id
+    completed
+  }
+}
+
+
+# Update new need with specified id & return updated need
+
+mutation updateNeed($title: String!, $description: String!, $id: ID!) {
+  updateNeed(id: $id, title: $title, description: $description) {
+    id
+    title
+    description
+    project_id
+    completed
+  }
+}
+
+
+# Complete need with specified id & return updated need
+
+mutation completeNeed($id: ID!) {
+  completeNeed(id: $id) {
+    id
+    title
+    description
+    project_id
+    completed
+  }
+}
+
+
+# Complete need with specified id & return updated need
+
+mutation deleteNeed($id: ID!) {
+  deleteNeed(id: $id) {
+    id
+    title
+    description
+    project_id
+    completed
+  }
+}
+
+#----------------------COMMENTS---------------------------------------
+
+# Create new comment & return message
+
+mutation createComment($description: String!, $project_id: ID!, $author: ID!) {
+  insertComment(description: $description, project_id: $project_id, author: $author) {
+    msg
+  }
+}
+
+
+# Update comment with specified ID & return message
+
+mutation updateComment($id: ID!, $description: String!) {
+  updateComment(id: $id, description: $description) {
+    msg
+  }
+}
+
+
+# Delete comment with specified ID & return message
+
+mutation deleteComment($id: ID!, $description: String!) {
+  deleteComment(id: $id, description: $description) {
+    msg
+  }
+}
