@@ -1,6 +1,6 @@
 const { Pool } = require('pg');
 
-const pool = new Pool();
+const pool = new Pool(process.env.DATABASE_URL);
 
 // On va créer un wrapper
 // Une "enveloppe" autour de la méthode query du pool
