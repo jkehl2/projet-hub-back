@@ -14,9 +14,6 @@ const connectRedis = require('connect-redis');
 const app = express();
 const redis = require('redis');
 const cors = require('cors');
-var url = require('url');
-
-
 
 cache.flushAll();
 
@@ -30,9 +27,11 @@ app.use(cors({
 
 app.use(bodyparser.json());
 const RedisStore = connectRedis(session);
-var redisURL = url.parse(process.env.REDISCLOUD_URL);
-var redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
-redisClient.auth(redisURL.auth.split(":")[1]);
+const redisClient = redis.createClient({
+    REDIS_URL,
+    host: 'localhost',
+    port: 6379
+})
 
 redisClient.on('error', function (err) {
     console.log('Could not establish a connection with redis. ' + err);
