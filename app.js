@@ -28,9 +28,7 @@ app.use(cors({
 app.use(bodyparser.json());
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient({
-    REDIS_URL,
-    host: 'localhost',
-    port: 6379
+    redis_url: REDIS_URL
 })
 
 redisClient.on('error', function (err) {
