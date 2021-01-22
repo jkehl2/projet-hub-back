@@ -27,9 +27,7 @@ app.use(cors({
 
 app.use(bodyparser.json());
 const RedisStore = connectRedis(session);
-const redisClient = redis.createClient({
-    redis_url: REDIS_URL
-})
+const redisClient = redis.createClient(process.env.REDIS_URL)
 
 redisClient.on('error', function (err) {
     console.log('Could not establish a connection with redis. ' + err);
