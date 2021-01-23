@@ -117,6 +117,48 @@ query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: B
 }
 #-------------------------------------------------
 
+#OK create new project
+mutation CreateProject(
+        $title: String!,
+        $description: String!,
+        $expiration_date: String!,
+        $location: String!,
+        $lat: Float!,
+        $long: Float!,
+        $image: String,
+        $file: String,
+        $author: ID!
+) {
+  insertProject(
+        title: $title,
+        description: $description,
+        expiration_date: $expiration_date,
+        location: $location,
+        lat: $lat,
+        long: $long,
+        image: $image,
+        file: $file,
+        author: $author
+  ) {
+    id
+    title
+    description
+  }
+}
+#query variables
+{
+	"title": "new project",
+	"description": "beautifull description",
+	"expiration_date": "2004-10-19 10:23:54+02",
+	"location": "address",
+	"lat": 1.0001,
+	"long": 1.0001,
+	"image": "",
+	"file": "",
+	"author": 1
+}
+#-------------------------------------------------
+
 
 
 
@@ -161,53 +203,6 @@ query GetFavoritesByUserID ($id: ID!){
 }
 
 
-# Create new Project & return created project
-
-mutation createProject (
-  $title: String!,
-  $description: String!,
-  $expiration_date:String!,
-  $location: String!,
-  $scope: Float!,
-  $lat: Float!,
-  $long: Float!,
-  $image: String,
-  $file: String
-  $author: ID!,
-){
-  insertProject(
-    title: $title,
-    description: $description,
-    expiration_date: $expiration_date,
-    location: $location,
-    scope: $scope,
-    lat: $lat,
-    long: $long,
-    image: $image,
-    file: $file,
-    author: $author
-  ){
-    id
-    title
-    description
-    expiration_date
-    location
-    lat
-    long
-    scope
-    west
-    east
-    north
-    south
-    image
-    file
-    archived
-    author{
-      name
-      email
-    }
-  }
-}
 
 
 # Update Project with specified Id & return updated projected

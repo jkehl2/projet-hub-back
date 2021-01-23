@@ -72,7 +72,30 @@ class ProjectDataSource extends DataSource {
         return newProject.rows[0];
     };
 
+    async editProject(project) {
+        const newProject = await this.client.query(`
+            UPDATE projects
+            SET    
+                title = $1, description, expiration_date, location, lat, long, image, file, author)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+             RETURNING *`,
+            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.author]
+             );
+        return newProject.rows[0];
+    };
 
+    async deleteProject(id) {
+        const deletion = await this.client.query(`
+            DELETE FROM users
+            WHERE
+                id = $1
+            RETURNING 'Deletion completed'
+             `,
+            [id]
+             );
+        console.log(deletion);
+        return {msg: deletion};
+    };
 
 
     projectLoader = new DataLoader(async (ids) => {

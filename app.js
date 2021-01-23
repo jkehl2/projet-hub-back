@@ -23,7 +23,7 @@ app.use(cors({
     methods: 'GET,POST,PATCH,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type'
 }));
-
+app.use(express.static('public'))
 
 app.use(bodyparser.json());
 const RedisStore = connectRedis(session);

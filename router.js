@@ -15,14 +15,7 @@ const bcrypt = require('bcrypt');
 /** Gestion des utilisateurs */
 
 router.get('/',async (req, res) => {
-    res.send(`<h2>Bienvenue sur l\'API de localhub</h2>
-    URI disponibles:
-    <ul>
-    <li><b>/login : </b>POST json</li>
-    <li><b>/logout :</b>POST</li>
-    <li><b>/graphql :</b>POST graphql query</li>
-    </ul>
-    `)
+    res.sendFile('index.html');
 })
 
 
