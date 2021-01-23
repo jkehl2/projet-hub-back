@@ -8,50 +8,7 @@ const schema = gql`
 
 # On va commencer par définir des "entités"
 
-"""
-Un post sur le blog
-"""
-type Post {
-    # Chaque propriété à un nom et un type
-    # On peut rajouter à un type un modificateur
-    id: ID! # Le modificateur ! indique que cette donnée est NOT NULL
 
-    "Technical name for URL"
-    slug: String!
-
-    title: String!
-
-    excerpt: String
-
-    content: String
-
-    # Je vais pouvoir décrire des liens entre mes entités
-    category: Category!
-
-    author: Author
-}
-
-"""
-Une categorie regroupant plusieurs posts
-"""
-type Category {
-    id: ID!
-
-    label: String!
-
-    route: String!
-
-    posts: [Post]
-    # Le modificateur [] indique que c'est une liste d'item de type Post
-}
-
-type Author {
-    id: ID!
-
-    name: String!
-
-    posts: [Post]
-}
 
 type Project {
     # Chaque propriété à un nom et un type
@@ -138,15 +95,6 @@ type Payload {
 # Il s'agirat des "points d'entrées" pour demander des données
 
 type Query {
-    "Renvoi toutes les categories du sites"
-    categories: [Category]
-
-    "Revoi un post par son ID"
-    post(id: ID!): Post
-
-    category(id: ID!): Category
-
-    author(id: ID!): Author
 
     project(id: ID!): Project
     projectsByGeo(lat: Float!, long: Float!, scope: Float!, archived: Boolean): [Project]
@@ -167,25 +115,6 @@ type Query {
 
 # Les mutations sont les requêtes d'écriture (Création, modification, suppression) de GraphQL
 type Mutation {
-    # Les mutations renvoient aussi des données
-    insertPost(
-        slug: String!, 
-        title: String!, 
-        category_id: ID!,
-        author_id: ID
-    ): Post
-    # Il est possible de définir un type custom pour éviter de passer tt les param. un à un
-    # https://graphql.org/graphql-js/mutations-and-input-types/
-
-
-    editPost(
-        id: ID!, 
-        slug: String!, 
-        title: String!, 
-        content: String!, 
-        category_id: ID!,
-        author_id: ID
-    ): Post
 
     insertUser(
         name: String!,

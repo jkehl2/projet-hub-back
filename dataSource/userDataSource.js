@@ -22,7 +22,6 @@ class UserDataSource extends DataSource {
         const cacheKey = "user"+ userId.toString();
         return cache.wrapper(cacheKey,async () => {
             await this.userLoader.clear(userId)
-            console.log(`-- Adding ${userId} to category dataloader`);
             return await this.userLoader.load(userId);
         });
     };

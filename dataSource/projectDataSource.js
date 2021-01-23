@@ -26,13 +26,11 @@ class ProjectDataSource extends DataSource {
     }
 
     async findProjectById(projectId) {
-        const result = await this.client.query('SELECT * FROM projects WHERE id = $1', [projectId]);
-
-        if (result.rowCount === 0) {
-            return undefined;
-        }
-
-        return result.rows[0];
+        const cacheKey = "project"+ projectId.toString();
+        return cache.wrapper(cacheKey,async () => {
+            await this.projectLoader.clear(projectId)
+            return await this.projectLoader.load(projectId);
+        });
     }
 
     async findProjectsByGeo(lat, long, scope, archived) {
@@ -60,7 +58,38 @@ class ProjectDataSource extends DataSource {
         return results.rows;
     }
 
+    async findProjectsByAuthorId(userId) {
+        await this.projectsByAuthorLoader.clear(userId);
+        console.log(`-- Adding ${userId} to project by category dataloader`);
+        return await this.projectsByAuthorLoader.load(userId);
+    }
 
+
+
+
+    projectLoader = new DataLoader(async (ids) => {
+        console.log('Running batch function project Loader with', ids);
+        const result = await this.client.query(
+            'SELECT * FROM projects WHERE id = ANY($1)',
+            [ids]);
+        const data = ids.map(id => {
+            return result.rows.find( project => project.id == id);
+        });
+        return data;
+    });
+
+    projectsByAuthorLoader = new DataLoader(async (ids) => {
+
+        console.log('Running batch function projectsByAuthor with', ids);
+
+        const result = await this.client.query(
+            'SELECT * FROM projects WHERE author = ANY($1)',
+            [ids]);
+        const data = ids.map(id => {
+               return result.rows.filter( project => project.author == id);
+        });
+      return data;
+    });
 
 
 
