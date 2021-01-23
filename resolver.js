@@ -56,6 +56,10 @@ module.exports = {
         async deleteUser(_, args, context) {
             return await context.dataSources.user.deleteUser(args.id);
         },
+
+        async insertProject(_, args, context) {
+            return await context.dataSources.project.insertProject(args);
+        },
     },
 
     Project: {

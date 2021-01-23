@@ -140,6 +140,18 @@ type Mutation {
 
     deleteUser(id: ID!): Payload
 
+    insertProject(
+        title: String!,
+        description: String!,
+        expiration_date: String!,
+        location: String!,
+        lat: Float!,
+        long: Float!,
+        image: String,
+        file: String,
+        author: ID!
+    ): Project
+
 }
 `;
 

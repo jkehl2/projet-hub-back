@@ -9,13 +9,7 @@ class ProjectDataSource extends DataSource {
         super();
     }
 
-    // Dans la DataSource on doit obligatoirement implémenter une méthode
-    // initialize qui sera appelé par notre serveur apollo pour faire de
-    // "l'injection de dépendance"
     initialize(config) {
-        // config contiendra 2 propriété
-        // - context qui servira à faire passer les dépendances
-        // - cache pour la gestion interne
         this.context = config.context;
         this.client = config.context.sqlClient;
     }
@@ -59,10 +53,24 @@ class ProjectDataSource extends DataSource {
     }
 
     async findProjectsByAuthorId(userId) {
-        await this.projectsByAuthorLoader.clear(userId);
-        console.log(`-- Adding ${userId} to project by category dataloader`);
-        return await this.projectsByAuthorLoader.load(userId);
+        const cacheKey = "projectsByUser"+ userId.toString();
+        return cache.wrapper(cacheKey,async () => {
+            await this.projectsByAuthorLoader.clear(userId);
+            return await this.projectsByAuthorLoader.load(userId);
+        });
+
     }
+
+    async insertProject(project) {
+        const newProject = await this.client.query(
+            `INSERT INTO projects
+                (title, description, expiration_date, location, lat, long, image, file, author)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+             RETURNING *`,
+            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.author]
+             );
+        return newProject.rows[0];
+    };
 
 
 
