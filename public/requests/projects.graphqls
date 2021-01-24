@@ -118,6 +118,7 @@ query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: B
 #-------------------------------------------------
 
 #OK create new project
+## AUTHENTICATION REQUIRED
 mutation CreateProject(
         $title: String!,
         $description: String!,
