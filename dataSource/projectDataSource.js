@@ -75,11 +75,18 @@ class ProjectDataSource extends DataSource {
     async editProject(project) {
         const newProject = await this.client.query(`
             UPDATE projects
-            SET    
-                title = $1, description, expiration_date, location, lat, long, image, file, author)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
-             RETURNING *`,
-            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.author]
+            SET 
+                title = $1, 
+                description = $2, 
+                expiration_date = $3, 
+                location = $4, 
+                lat = $5, 
+                long = $6, 
+                image = $7, 
+                file = $8
+            WHERE id = $9
+            RETURNING *`,
+            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id]
              );
         return newProject.rows[0];
     };

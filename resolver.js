@@ -60,6 +60,10 @@ module.exports = {
         async insertProject(_, args, context) {
             return await context.dataSources.project.insertProject(args);
         },
+
+        async editProject(_, args, context) {
+            return await context.dataSources.project.editProject(args);
+        },
     },
 
     Project: {

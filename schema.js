@@ -152,6 +152,18 @@ type Mutation {
         author: ID!
     ): Project
 
+    editProject(
+        id: ID!,
+        title: String!,
+        description: String!,
+        expiration_date: String!,
+        location: String!,
+        lat: Float!,
+        long: Float!,
+        image: String,
+        file: String
+    ): Project
+
 }
 `;
 
