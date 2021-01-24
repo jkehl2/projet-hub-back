@@ -21,7 +21,6 @@ type Project {
     
     expiration_date: String!
 
-    "Technical name for URL"
     title: String!
 
     description: String!
@@ -38,14 +37,11 @@ type Project {
 
     archived: Boolean
 
-    # Je vais pouvoir décrire des liens entre mes entités
-
     author: User
 
     needs: [Need]
 
     comments: [Comment]
-
 }
 
 type User {
@@ -62,6 +58,8 @@ type User {
     projects: [Project]
 
     activated: Boolean
+
+    errors: String
 }
 
 type Need {
@@ -87,7 +85,8 @@ type Comment {
 }
 
 type Payload {
-    msg: String!
+    infos: String
+    errors: String
 }
 
 # On finit notre schéma par un type spécial
@@ -123,22 +122,19 @@ type Mutation {
     ): User
 
     editUserInfos(
-        id: ID!,
         name: String!,
         email: String!,
     ): User
 
     editUserAvatar(
-        id: ID!,
         avatar: String!
     ): User
 
     editUserPassword(
-        id: ID!,
         password: String!
     ): User
 
-    deleteUser(id: ID!): Payload
+    deleteUser: Payload
 
     insertProject(
         title: String!,
@@ -163,6 +159,8 @@ type Mutation {
         image: String,
         file: String
     ): Project
+
+    deleteProject(id: ID!): Payload
 
 }
 `;

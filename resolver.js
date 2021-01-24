@@ -3,9 +3,6 @@ module.exports = {
     Query: {
     
         async projects(_, __, context) {
-            if (!context.user) 
-                return null;
-            else
                 return await context.dataSources.project.findAllProjects();
         },
 
@@ -42,19 +39,31 @@ module.exports = {
         },
 
         async editUserInfos(_, args, context) {
-            return await context.dataSources.user.editUserInfos(args);
+            if (!context.user) 
+                throw "user edit requires authentification";
+            else
+                return await context.dataSources.user.editUserInfos(args, context.user);
         },
 
         async editUserAvatar(_, args, context) {
-            return await context.dataSources.user.editUserAvatar(args);
+            if (!context.user) 
+                throw "user edit requires authentification";
+            else
+                return await context.dataSources.user.editUserAvatar(args, context.user);
         },
 
         async editUserPassword(_, args, context) {
-            return await context.dataSources.user.editUserPassword(args);
+            if (!context.user) 
+                throw "user edit requires authentification";
+            else
+                return await context.dataSources.user.editUserPassword(args, context.user);
         },
 
         async deleteUser(_, args, context) {
-            return await context.dataSources.user.deleteUser(args.id);
+            if (!context.user) 
+                return {errors: "user deletion requires authentification"};
+            else
+                return await context.dataSources.user.deleteUser(context.user);
         },
 
         async insertProject(_, args, context) {
@@ -63,6 +72,13 @@ module.exports = {
 
         async editProject(_, args, context) {
             return await context.dataSources.project.editProject(args);
+        },
+
+        async deleteProject(_, args, context) {
+            if (!context.user) 
+                return {errors: "project deletion requires authentification"};
+            else
+                return await context.dataSources.project.deleteProject(args.id, context.user);
         },
     },
 

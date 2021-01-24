@@ -91,17 +91,29 @@ class ProjectDataSource extends DataSource {
         return newProject.rows[0];
     };
 
-    async deleteProject(id) {
-        const deletion = await this.client.query(`
-            DELETE FROM users
-            WHERE
-                id = $1
-            RETURNING 'Deletion completed'
-             `,
-            [id]
-             );
-        console.log(deletion);
-        return {msg: deletion};
+    async deleteProject(projectId, user) {
+        try{
+            const project = await this.findProjectById(projectId);
+            console.log(project)
+            if (!project)
+                throw "project to delete not found";
+            console.log(`trying deletetion project author ${project.author} with user id ${user.id}`)
+
+            if (project.author != user.id)
+                throw "Project deletion not allowed with this user profile";
+            
+            const deletion = await this.client.query(`
+                DELETE FROM projects
+                WHERE
+                    id = $1
+                RETURNING 'Deletion completed'
+                 `,
+                [projectId]
+                 );
+            return {infos: deletion.rows[0]['?column?']};
+                } catch(error) {
+            return {errors: error};
+        }
     };
 
 

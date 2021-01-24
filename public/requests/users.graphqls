@@ -19,7 +19,7 @@ query GetUserByID($id: ID!) {
 #------------------------------------------------
 
 #OK create new user & return created user
-
+## requires unique email
 mutation createUser($name: String!, $email: String!,$password: String! ) {
   insertUser(name: $name, email: $email,password: $password) {
     id
@@ -35,10 +35,10 @@ mutation createUser($name: String!, $email: String!,$password: String! ) {
 }
 #------------------------------------------------
 
-#OK update user name & password
-
-mutation editUser($id: ID!, $name: String!, $email: String!) {
-  editUserInfos(id: $id, name: $name, email: $email) {
+#OK update user name & email
+## AUTHENTICATION REQUIRED
+mutation editUser($name: String!, $email: String!) {
+  editUserInfos(name: $name, email: $email) {
     id
     name
     email
@@ -47,16 +47,15 @@ mutation editUser($id: ID!, $name: String!, $email: String!) {
 } 
 #query variables
 {
-	"id": 7,
 	"name": "user test updated",
 	"email": "email"
 }
 #------------------------------------------------
 
 #OK update user password
-
-mutation editUserPassword($id: ID!, $password: String!) {
-  editUserPassword(id: $id, password: $password) {
+## AUTHENTICATION REQUIRED
+mutation editUserPassword($password: String!) {
+  editUserPassword(password: $password) {
     id
     name
     email
@@ -65,15 +64,14 @@ mutation editUserPassword($id: ID!, $password: String!) {
 } 
 #query variables
 {
-	"id": 7,
 	"password": "password"
 }
 #------------------------------------------------
 
 #OK update user avatar
-
-mutation editUserAvatar($id: ID!, $avatar: String!) {
-  editUserAvatar(id: $id, avatar: $avatar) {
+## AUTHENTICATION REQUIRED
+mutation editUserAvatar($avatar: String!) {
+  editUserAvatar(avatar: $avatar) {
     id
     name
     email
@@ -82,22 +80,20 @@ mutation editUserAvatar($id: ID!, $avatar: String!) {
 } 
 #query variables
 {
-	"id": 7,
-	"avatar": "avatar-link2"
+	"avatar": "avatar-image-name"
 }
 #------------------------------------------------
 
 #OK Delete User
-
-mutation deleteUser($id: ID!) {
-  deleteUser(id: $id){
-      msg
+## AUTHENTICATION REQUIRED
+  mutation{
+    deleteUser{
+      infos
+      errors
+    }
   }   
-}
-#query variables
-{
-	"id": 6
-}
+# no query variables
+
 #-------------------------------------------------
 
 

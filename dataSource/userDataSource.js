@@ -30,13 +30,13 @@ class UserDataSource extends DataSource {
         const savedUser = await this.client.query(
             `INSERT INTO users
                 (name, email, password)
-             VALUES ($1, $2, crypt($3,gen_salt('md5'))) RETURNING *`,
+                VALUES ($1, $2, crypt($3,gen_salt('md5'))) RETURNING *`,
             [user.name, user.email, user.password]
-             );
+                );
         return savedUser.rows[0];
     };
 
-    async editUserInfos(user) {
+    async editUserInfos(newInfos, user) {
         const savedUser = await this.client.query(`
             UPDATE users
             SET 
@@ -46,12 +46,12 @@ class UserDataSource extends DataSource {
                 id = $3
             RETURNING *
              `,
-            [user.name, user.email, user.id]
+            [newInfos.name, newInfos.email, user.id]
              );
         return savedUser.rows[0];
     };
 
-    async editUserAvatar(user) {
+    async editUserAvatar(newInfos, user) {
         const savedUser = await this.client.query(`
             UPDATE users
             SET 
@@ -60,12 +60,12 @@ class UserDataSource extends DataSource {
                 id = $2
             RETURNING *
              `,
-            [user.avatar, user.id]
+            [newInfos.avatar, user.id]
              );
         return savedUser.rows[0];
     };
 
-    async editUserPassword(user) {
+    async editUserPassword(newInfos, user) {
         const savedUser = await this.client.query(`
             UPDATE users
             SET 
@@ -74,22 +74,21 @@ class UserDataSource extends DataSource {
                 id = $2
             RETURNING *
              `,
-            [user.password, user.id]
+            [newInfos.password, user.id]
              );
         return savedUser.rows[0];
     };
 
-    async deleteUser(id) {
+    async deleteUser(user) {
         const deletion = await this.client.query(`
             DELETE FROM users
             WHERE
                 id = $1
             RETURNING 'Deletion completed'
              `,
-            [id]
+            [user.id]
              );
-        console.log(deletion);
-        return {msg: deletion};
+        return {infos: deletion.rows[0]['?column?']};
     };
 
     async findUserByEmail(email) {

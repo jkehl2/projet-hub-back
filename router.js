@@ -23,7 +23,6 @@ router.post('/login',async (req, res) => {
     // Read username and password from request body
     const { email, password } = req.body;
     try{
-
         if (!email)
             throw "email/password was not provided";
 
