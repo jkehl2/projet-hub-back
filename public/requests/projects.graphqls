@@ -161,6 +161,63 @@ mutation CreateProject(
 #-------------------------------------------------
 
 
+#OK Update Project with specified Id & return updated projected
+mutation EditProject(
+        $id: ID!,
+        $title: String!,
+        $description: String!,
+        $expiration_date: String!,
+        $location: String!,
+        $lat: Float!,
+        $long: Float!,
+        $image: String,
+        $file: String
+) {
+  editProject(
+        id: $id,
+        title: $title,
+        description: $description,
+        expiration_date: $expiration_date,
+        location: $location,
+        lat: $lat,
+        long: $long,
+        image: $image,
+        file: $file
+  ) {
+    id
+    title
+    description
+  }
+}
+
+#query variables
+{
+	"id": 3,
+	"title": "new project updated",
+	"description": "beautifull description",
+	"expiration_date": "2004-10-19 10:23:54+02",
+	"location": "address",
+	"lat": 1.0001,
+	"long": 1.0001,
+	"image": "",
+	"file": ""
+}
+#-------------------------------------------------
+
+# delete project with specified ID & return message
+## requires authentification with author profile
+mutation deleteProject($id: ID!) {
+  deleteProject(id: $id){
+      infos
+      errors
+  }   
+}
+
+#query variables
+{
+	"id": 4
+}
+#-------------------------------------------------
 
 
 
@@ -203,67 +260,6 @@ query GetFavoritesByUserID ($id: ID!){
   }
 }
 
-
-
-
-# Update Project with specified Id & return updated projected
-
-mutation updateProject (
-  $id: ID!,
-  $title: String!,
-  $description: String!,
-  $expiration_date:String!,
-  $location: String!,
-  $scope: Float!,
-  $lat: Float!,
-  $long: Float!,
-  $image: String,
-  $file: String,
-  $author: ID!,
-){
-  updateProject(
-    id: $id,
-    title: $title,
-    description: $description,
-    expiration_date: $expiration_date,
-    location: $location,
-    scope: $scope,
-    lat: $lat,
-    long: $long,
-    image: $image,
-    file: $file
-    author: $author
-  ){
-    id
-    title
-    description
-    expiration_date
-    location
-    lat
-    long
-    scope
-    west
-    east
-    north
-    south
-    image
-    file
-    archived
-    author{
-      name
-      email
-    }
-  }
-}
-
-
-# delete project with specified ID & return message
-
-mutation deleteProject($id: ID!) {
-  deleteProject(id: $id) {
-    msg
-  }
-}
 
 
 # archive project with specified ID & return archived project
