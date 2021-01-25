@@ -30,6 +30,10 @@ module.exports = {
             return await context.dataSources.comment.findCommentById(args.id);
         },
 
+        async favorite(_, args, context) {
+            return await context.dataSources.favorite.findFavoriteById(args.id);
+        },
+
 
     },
 
@@ -105,6 +109,20 @@ module.exports = {
                 return await context.dataSources.need.deleteNeed(args, context.user);
         },
 
+        async insertFavorite(_, args, context) {
+            if (!context.user) 
+                throw "favorite creation requires authentification";
+            else
+                return await context.dataSources.favorite.insertFavorite(args.project_id, context.user);
+        },
+        
+        async deleteFavorite(_, args, context) {
+            if (!context.user) 
+                throw "favorite deletion requires authentification";
+            else
+                return await context.dataSources.favorite.deleteFavorite(args.project_id, context.user);
+        },
+
     },
 
     Project: {
@@ -122,12 +140,22 @@ module.exports = {
             const projectId = project.id;
             return await context.dataSources.comment.findCommentsByProjectId(projectId);
         },
+
+        async followers(project, _, context) {
+            const projectId = project.id;
+            return await context.dataSources.favorite.findFavoritesByProjectId(projectId);
+        },
     },
 
     User: {
         async projects(user, _, context) {
             const userId = user.id;
             return await context.dataSources.project.findProjectsByAuthorId(userId);
+        },
+
+        async favorites(user, _, context) {
+            const userId = user.id;
+            return await context.dataSources.favorite.findFavoriteProjectsByUserId(userId);
         }
     },
 
@@ -142,6 +170,20 @@ module.exports = {
         async project(comment, _, context) {
             const projectId = comment.project_id;
             return await context.dataSources.project.findProjectById(projectId);
-        }
+        },
+        async author(project, _, context) {
+            return await context.dataSources.user.findUserById(project.author);
+        },
+
+    },
+
+    Favorite: {
+        async project(favorite, _, context) {
+            const projectId = favorite.project_id;
+            return await context.dataSources.project.findProjectById(favorite.project_id);
+        },
+        async user(favorite, _, context) {
+            return await context.dataSources.user.findUserById(favorite.user_id);
+        },
     },
 }

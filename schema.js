@@ -42,6 +42,9 @@ type Project {
     needs: [Need]
 
     comments: [Comment]
+
+    followers: [Favorite]
+
 }
 
 type User {
@@ -59,7 +62,8 @@ type User {
 
     activated: Boolean
 
-    errors: String
+    favorites: [Project]
+
 }
 
 type Need {
@@ -82,6 +86,12 @@ type Comment {
     author: User
 
     project: Project
+}
+
+type Favorite {
+    id:ID!
+    user: User!
+    project: Project!
 }
 
 type Payload {
@@ -108,6 +118,9 @@ type Query {
 
     need(id: ID!): Need
     needs: [Need]
+
+    favorite(id: ID!): Favorite
+    favorites: [Favorite]
 
 
 }
@@ -175,6 +188,14 @@ type Mutation {
     ): Need
 
     deleteNeed(id: ID!): Payload
+
+    insertFavorite(
+        project_id: ID!
+    ): Favorite
+
+    deleteFavorite(
+        project_id: ID!
+    ): Payload
 }
 `;
 
