@@ -15,8 +15,8 @@ const app = express();
 const redis = require('redis');
 const cors = require('cors');
 
-cache.flushAll();
 
+cache.flushAll();
 
 app.use(cors({
     origin: '*',
