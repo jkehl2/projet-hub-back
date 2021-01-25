@@ -1,3 +1,4 @@
+const { need } = require("./dataSource");
 
 module.exports = {
     Query: {
@@ -71,57 +72,20 @@ module.exports = {
         },
 
         async insertProject(_, args, context) {
-            return await context.dataSources.project.insertProject(args);
-        },
-
-        async editProject(_, args, context) {
             if (!context.user) 
-                throw "project edit requires authentification";
-            else
-                return await context.dataSources.project.editProject(args, context.user);
+                throw "project deletion requires authentification";
+            else{
+                const newProject = await context.dataSources.project.insertProject(args);
+                for(const need of args.needs){
+                    need.project_id = newProject.id;
+                    newProject.needs =[];
+                    newProject.needs.push(await context.dataSources.need.insertNeed(need, context.user))
+                }
+                return newProject;
+            }
         },
+    
 
-        async deleteProject(_, args, context) {
-            if (!context.user) 
-                return {errors: "project deletion requires authentification"};
-            else
-                return await context.dataSources.project.deleteProject(args.id, context.user);
-        },
-
-        async insertNeed(_, args, context) {
-                if (!context.user) 
-                    throw "project edit requires authentification";
-                else
-                return await context.dataSources.need.insertNeed(args, context.user);
-        },
-
-        async editNeed(_, args, context) {
-            if (!context.user) 
-                throw "project edit requires authentification";
-            else
-                return await context.dataSources.need.editNeed(args, context.user);
-        },
-
-        async deleteNeed(_, args, context) {
-            if (!context.user) 
-                throw "project edit requires authentification";
-            else
-                return await context.dataSources.need.deleteNeed(args, context.user);
-        },
-
-        async insertFavorite(_, args, context) {
-            if (!context.user) 
-                throw "favorite creation requires authentification";
-            else
-                return await context.dataSources.favorite.insertFavorite(args.project_id, context.user);
-        },
-        
-        async deleteFavorite(_, args, context) {
-            if (!context.user) 
-                throw "favorite deletion requires authentification";
-            else
-                return await context.dataSources.favorite.deleteFavorite(args.project_id, context.user);
-        },
 
     },
 

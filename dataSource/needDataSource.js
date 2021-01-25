@@ -135,12 +135,21 @@ class NeedDataSource extends DataSource {
     });
 
     async checkUserPermission(need, user){
-        const needToUpdate = await this.findNeedById(need.id)
-        const cacheKey = "projectToEdit"+ needToUpdate.project_id.toString();
+        console.log("checking permission")
+        console.log(need.project_id)
+        let projectId;
+        if(!need.project_id){
+            const needToUpdate = await this.findNeedById(need.id)
+            projectId = needToUpdate.project_id;
+        }
+        else{
+            projectId = need.project_id
+        }
+        const cacheKey = "projectToEdit"+ projectId.toString();
         const projectSearch = await cache.wrapper(cacheKey, async () => {
             return await this.client.query(
                 'SELECT * FROM projects WHERE id = $1',
-                [needToUpdate.project_id]);
+                [projectId]);
         });
 
         const projectToUpdade = projectSearch.rows[0];

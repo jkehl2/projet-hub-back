@@ -8,7 +8,14 @@ const schema = gql`
 
 # On va commencer par définir des "entités"
 
+input NeedInput {
 
+    title: String!
+
+    description: String!
+
+    project: ID
+}
 
 type Project {
     # Chaque propriété à un nom et un type
@@ -158,7 +165,9 @@ type Mutation {
         long: Float!,
         image: String,
         file: String,
-        author: ID!
+        author: ID!,
+        needs: [NeedInput]
+
     ): Project
 
     editProject(
@@ -170,7 +179,7 @@ type Mutation {
         lat: Float!,
         long: Float!,
         image: String,
-        file: String
+        file: String,
     ): Project
 
     deleteProject(id: ID!): Payload
