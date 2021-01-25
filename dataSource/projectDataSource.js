@@ -127,6 +127,7 @@ class ProjectDataSource extends DataSource {
         const result = await this.client.query(
             'SELECT * FROM projects WHERE id = ANY($1)',
             [ids]);
+            
         const data = ids.map(id => {
             return result.rows.find( project => project.id == id);
         });

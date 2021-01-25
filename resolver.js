@@ -91,6 +91,13 @@ module.exports = {
                 return await context.dataSources.need.insertNeed(args, context.user);
         },
 
+        async editNeed(_, args, context) {
+            if (!context.user) 
+                throw "user edit requires authentification";
+            else
+                return await context.dataSources.need.editNeed(args, context.user);
+    },
+
     },
 
     Project: {

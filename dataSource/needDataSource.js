@@ -37,18 +37,16 @@ class NeedDataSource extends DataSource {
     }
 
     async insertNeed(need, user) {
-        const cacheKey = "project"+ need.project_id.toString();
-        // const projectSearch = await cache.wrapper(cacheKey, async () => {
-        //     return await this.client.query(
-        //         'SELECT * FROM projects WHERE id = $1',
-        //         [need.project_id]);
-        // });
-
-        const projectSearch = await this.client.query(
+        const cacheKey = "projectToEdit"+ need.project_id.toString();
+        const projectSearch = await cache.wrapper(cacheKey, async () => {
+            return await this.client.query(
                 'SELECT * FROM projects WHERE id = $1',
                 [need.project_id]);
-    
+        });
+
         const projectToUpdade = projectSearch.rows[0];
+
+        console.log(projectToUpdade)
 
         if (!projectToUpdade)
             throw "project to update not found";
@@ -65,6 +63,38 @@ class NeedDataSource extends DataSource {
              );
         return newNeed.rows[0];
     };
+
+    async editNeed(need, user) {
+        const needToUpdate = await this.findNeedById(need.id)
+        const cacheKey = "projectToEdit"+ needToUpdate.project_id.toString();
+        const projectSearch = await cache.wrapper(cacheKey, async () => {
+            return await this.client.query(
+                'SELECT * FROM projects WHERE id = $1',
+                [needToUpdate.project_id]);
+        });
+
+        const projectToUpdade = projectSearch.rows[0];
+
+        if (!projectToUpdade)
+            throw "project to update not found";
+
+        if (projectToUpdade.author != user.id)
+            throw "Project edit not allowed with this user profile";
+
+        const neddUpdated = await this.client.query(`
+            UPDATE needs
+            SET
+                title = $1,
+                description = $2
+            WHERE id = $3
+            RETURNING *`,
+            [need.title, need.description, need.id]
+             );
+        return neddUpdated.rows[0];
+    };
+
+
+
     needLoader = new DataLoader(async (ids) => {
         console.log('Running batch function categoriesLoader with', ids);
         // Dans mon loader
