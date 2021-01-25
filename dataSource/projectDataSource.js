@@ -78,7 +78,7 @@ class ProjectDataSource extends DataSource {
             throw "project to update not found";
 
         if (projectToUpdade.author != user.id)
-            throw "Project deletion not allowed with this user profile";
+            throw "Project edit not allowed with this user profile";
         
         const newProject = await this.client.query(`
             UPDATE projects

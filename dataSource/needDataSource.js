@@ -1,5 +1,6 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
+const cache = require('./cache');
 
 class NeedDataSource extends DataSource {
 
@@ -35,7 +36,26 @@ class NeedDataSource extends DataSource {
         return await this.needsByProjectLoader.load(projectId);
     }
 
-    async insertNeed(need) {
+    async insertNeed(need, user) {
+        const cacheKey = "project"+ need.project_id.toString();
+        // const projectSearch = await cache.wrapper(cacheKey, async () => {
+        //     return await this.client.query(
+        //         'SELECT * FROM projects WHERE id = $1',
+        //         [need.project_id]);
+        // });
+
+        const projectSearch = await this.client.query(
+                'SELECT * FROM projects WHERE id = $1',
+                [need.project_id]);
+    
+        const projectToUpdade = projectSearch.rows[0];
+
+        if (!projectToUpdade)
+            throw "project to update not found";
+
+        if (projectToUpdade.author != user.id)
+            throw "Project edit not allowed with this user profile";
+
         const newNeed = await this.client.query(
             `INSERT INTO needs
                 (title, description, project_id)
@@ -45,9 +65,6 @@ class NeedDataSource extends DataSource {
              );
         return newNeed.rows[0];
     };
-
-    // Le constructeur de dataLoader reçoit une fonction
-    // qui a pour paramètre une liste d'élément à récupérer
     needLoader = new DataLoader(async (ids) => {
         console.log('Running batch function categoriesLoader with', ids);
         // Dans mon loader
@@ -96,6 +113,8 @@ class NeedDataSource extends DataSource {
         // ]
         return data;
     });
+
+
 }
 
 module.exports = NeedDataSource;

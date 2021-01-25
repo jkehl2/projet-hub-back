@@ -85,9 +85,9 @@ module.exports = {
         },
 
         async insertNeed(_, args, context) {
-            // if (!context.user) 
-            //     throw "user edit requires authentification";
-            // else
+                if (!context.user) 
+                    throw "user edit requires authentification";
+                else
                 return await context.dataSources.need.insertNeed(args, context.user);
         },
 
