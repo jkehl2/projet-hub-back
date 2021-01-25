@@ -37,21 +37,7 @@ class NeedDataSource extends DataSource {
     }
 
     async insertNeed(need, user) {
-        const cacheKey = "projectToEdit"+ need.project_id.toString();
-        const projectSearch = await cache.wrapper(cacheKey, async () => {
-            return await this.client.query(
-                'SELECT * FROM projects WHERE id = $1',
-                [need.project_id]);
-        });
-
-        const projectToUpdade = projectSearch.rows[0];
-
-        console.log(projectToUpdade)
-
-        if (!projectToUpdade)
-            throw "project to update not found";
-
-        if (projectToUpdade.author != user.id)
+        if (!this.checkUserPermission(need, user))
             throw "Project edit not allowed with this user profile";
 
         const newNeed = await this.client.query(
@@ -65,23 +51,10 @@ class NeedDataSource extends DataSource {
     };
 
     async editNeed(need, user) {
-        const needToUpdate = await this.findNeedById(need.id)
-        const cacheKey = "projectToEdit"+ needToUpdate.project_id.toString();
-        const projectSearch = await cache.wrapper(cacheKey, async () => {
-            return await this.client.query(
-                'SELECT * FROM projects WHERE id = $1',
-                [needToUpdate.project_id]);
-        });
-
-        const projectToUpdade = projectSearch.rows[0];
-
-        if (!projectToUpdade)
-            throw "project to update not found";
-
-        if (projectToUpdade.author != user.id)
+        if (!this.checkUserPermission(need, user))
             throw "Project edit not allowed with this user profile";
 
-        const neddUpdated = await this.client.query(`
+        const needUpdated = await this.client.query(`
             UPDATE needs
             SET
                 title = $1,
@@ -90,7 +63,24 @@ class NeedDataSource extends DataSource {
             RETURNING *`,
             [need.title, need.description, need.id]
              );
-        return neddUpdated.rows[0];
+        return needUpdated.rows[0];
+
+    };
+
+    async deleteNeed(need, user) {
+        if (!this.checkUserPermission(need, user))
+            throw "Project edit not allowed with this user profile";
+
+        const deletion = await this.client.query(`
+            DELETE FROM needs
+            WHERE
+                id = $1
+            RETURNING 'Deletion completed'
+            `,
+            [need.id]
+             );
+        return {infos: deletion.rows[0]['?column?']};
+
     };
 
 
@@ -143,6 +133,26 @@ class NeedDataSource extends DataSource {
         // ]
         return data;
     });
+
+    async checkUserPermission(need, user){
+        const needToUpdate = await this.findNeedById(need.id)
+        const cacheKey = "projectToEdit"+ needToUpdate.project_id.toString();
+        const projectSearch = await cache.wrapper(cacheKey, async () => {
+            return await this.client.query(
+                'SELECT * FROM projects WHERE id = $1',
+                [needToUpdate.project_id]);
+        });
+
+        const projectToUpdade = projectSearch.rows[0];
+
+        if (!projectToUpdade)
+            throw "project to update not found";
+
+        if (projectToUpdade.author != user.id)
+            return false;
+        else
+            return true;
+    }
 
 
 }
