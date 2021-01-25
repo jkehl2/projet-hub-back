@@ -42,16 +42,8 @@ class NeedDataSource extends DataSource {
                     'SELECT * FROM favorites WHERE user_id = $1',
                     [userId]);
                 const favorites = result.rows;
-                const projectsIds = favorites.map(favorite => favorite['project_id'])
-                const projects = [];
-                for(const projectId of projectsIds){
-                    const result = await this.client.query(
-                        'SELECT * FROM projects WHERE id = $1',
-                        [projectId]);
-                    projects.push(result.rows[0])
 
-                };
-                return projects;
+                return favorites;
             });
 
 

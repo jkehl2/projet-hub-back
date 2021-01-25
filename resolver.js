@@ -155,7 +155,13 @@ module.exports = {
 
         async favorites(user, _, context) {
             const userId = user.id;
-            return await context.dataSources.favorite.findFavoriteProjectsByUserId(userId);
+            const favorites = await context.dataSources.favorite.findFavoriteProjectsByUserId(userId);
+            const projectsIds = favorites.map(favorite => favorite['project_id'])
+            const projects = [];
+            for(const projectId of projectsIds){
+                projects.push(await context.dataSources.project.findProjectById(projectId))
+            };
+            return projects;
         }
     },
 
