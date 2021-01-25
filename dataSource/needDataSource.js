@@ -35,6 +35,17 @@ class NeedDataSource extends DataSource {
         return await this.needsByProjectLoader.load(projectId);
     }
 
+    async insertNeed(need) {
+        const newNeed = await this.client.query(
+            `INSERT INTO needs
+                (title, description, project_id)
+             VALUES ($1, $2, $3) 
+             RETURNING *`,
+            [need.title, need.description, need.project_id]
+             );
+        return newNeed.rows[0];
+    };
+
     // Le constructeur de dataLoader reçoit une fonction
     // qui a pour paramètre une liste d'élément à récupérer
     needLoader = new DataLoader(async (ids) => {

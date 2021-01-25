@@ -72,7 +72,14 @@ class ProjectDataSource extends DataSource {
         return newProject.rows[0];
     };
 
-    async editProject(project) {
+    async editProject(project, user) {
+        const projectToUpdade = await this.findProjectById(project.id);
+        if (!projectToUpdade)
+            throw "project to update not found";
+
+        if (projectToUpdade.author != user.id)
+            throw "Project deletion not allowed with this user profile";
+        
         const newProject = await this.client.query(`
             UPDATE projects
             SET 
@@ -94,10 +101,8 @@ class ProjectDataSource extends DataSource {
     async deleteProject(projectId, user) {
         try{
             const project = await this.findProjectById(projectId);
-            console.log(project)
             if (!project)
                 throw "project to delete not found";
-            console.log(`trying deletetion project author ${project.author} with user id ${user.id}`)
 
             if (project.author != user.id)
                 throw "Project deletion not allowed with this user profile";

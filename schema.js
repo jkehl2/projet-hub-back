@@ -162,6 +162,19 @@ type Mutation {
 
     deleteProject(id: ID!): Payload
 
+    insertNeed(
+        title: String!,
+        description: String!,
+        project_id: ID!
+    ): Need
+
+    editNeed(
+        id: ID!,
+        title: String!,
+        description: String!
+    ): Need
+
+    deleteNeed(id: ID!): Payload
 }
 `;
 

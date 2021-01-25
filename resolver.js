@@ -71,7 +71,10 @@ module.exports = {
         },
 
         async editProject(_, args, context) {
-            return await context.dataSources.project.editProject(args);
+            if (!context.user) 
+                throw "project edit requires authentification";
+            else
+                return await context.dataSources.project.editProject(args, context.user);
         },
 
         async deleteProject(_, args, context) {
@@ -80,6 +83,14 @@ module.exports = {
             else
                 return await context.dataSources.project.deleteProject(args.id, context.user);
         },
+
+        async insertNeed(_, args, context) {
+            // if (!context.user) 
+            //     throw "user edit requires authentification";
+            // else
+                return await context.dataSources.need.insertNeed(args, context.user);
+        },
+
     },
 
     Project: {
@@ -103,6 +114,20 @@ module.exports = {
         async projects(user, _, context) {
             const userId = user.id;
             return await context.dataSources.project.findProjectsByAuthorId(userId);
+        }
+    },
+
+    Need: {
+        async project(need, _, context) {
+            const projectId = need.project_id;
+            return await context.dataSources.project.findProjectById(projectId);
+        }
+    },
+
+    Comment: {
+        async project(comment, _, context) {
+            const projectId = comment.project_id;
+            return await context.dataSources.project.findProjectById(projectId);
         }
     },
 }
