@@ -18,8 +18,7 @@ INSERT INTO users (name, email, password) VALUES
 ('Michel','michel@michel', crypt('password1', gen_salt('md5'))),
 ('Bruce Reynolds','bruce@reynolds', crypt('password1', gen_salt('md5'))),
 ('Johann Kehl','johannkehl@oclock.com', crypt('password1', gen_salt('md5'))),
-('Johanna Rolland','johannarolland@oclock.com', crypt('password1', gen_salt('md5')))
-;
+('Johanna Rolland','johannarolland@oclock.com', crypt('password1', gen_salt('md5')));
 
 
 CREATE TABLE projects (
@@ -38,20 +37,21 @@ CREATE TABLE projects (
     author INT REFERENCES users(id) ON DELETE CASCADE
 );
 
-INSERT INTO projects (expiration_date, title, description, location, lat, long, author, archived) VALUES
-('2001-09-28 01:00:00','projet test', 'ceci est un projet', 'Paris', 1.00000, 1.00000,1,FALSE),
-('2030-01-02 12:00:00','hold-up', 'braquer la banque du coin', 'Nantes', 2.00000, 2.00000, 2, FALSE),
+INSERT INTO projects (expiration_date, title, description, location, lat, long, author, archived, image) VALUES
+('2001-09-28 01:00:00','projet test', 'ceci est un projet', 'Paris', 1.00000, 1.00000,1,FALSE, ''),
+('2030-01-02 12:00:00','hold-up', 'braquer la banque du coin', 'Nantes', 2.00000, 2.00000, 2, FALSE, ''),
 ('2021-02-08 12:00:00','Local-hub', 
 'Developper une super appli qui permettra de mettre en relation les acteurs d’un périmètre géographique de même intérêt afin de faciliter le démarrage de projets'
-, 'Coueron', 47.230998, -1.72929, 3, FALSE),
+, 'Coueron', 47.230998, -1.72929, 3, FALSE,
+'https://geolocalisation-telephone.fr/locate-300x273.png'),
 ('2021-03-20 12:00:00','Crèche de Saint-Herblain', 
 'Les bâtiments en direction des scolaires ou de la petite enfance sont un terrain de prédilection de l’agence et un volet important de son activité. Construits ou réhabilités, souvent dans des communes de moins de 1 500 habitants, ils répondent aux besoins d’une population en augmentation. Lieu de vie principal des communes ou des quartiers, nos constructions dans ce domaine respectent et valorisent, dans un souci d’intégration la nature et l’histoire du pays où ils sont implantés. Tous nos groupes scolaires intègrent (en plus des espaces destinés aux différentes classes d’âge) des espaces...'
-, 'Saint-Herblain', 47.2259, -1.6394, 1, FALSE),
+, 'Saint-Herblain', 47.2259, -1.6394, 1, FALSE,
+'https://www.selvea.com/wp-content/uploads/2015/10/2014-Narbonne-060-Patio-central-Architecte-Pascale-Deffayet_cr1-1170x539.jpg'),
 ('2020-07-14 12:00:00','Potager Urbain', 
 'L’agriculture urbaine est en plein essor et ce, partout dans le monde. Les agglomérations se sont progressivement vidées de leur maraîchers. C’est dans ce contexte qu’ECOVEGETAL a développé un système permettant de reconquérir ce territoire perdu au profit de l’urbanisation.
 L’intérêt est de raccourcir le circuit entre consommateur et producteur, de fournir de la nourriture localement et de revaloriser des variétés anciennes (pommes, tomates, salades …). L’agriculture urbaine est aussi source d’emplois, de lieux de partage et de convivialité comme peuvent l’être un parc ou un jardin.'
-, 'Nantes', 47.2272, -1.5631, 4, TRUE)
-;
+, 'Nantes', 47.2272, -1.5631, 4, TRUE,'https://cdn.bioalaune.com/img/article/thumb/900x500/36239-potager-urbain-ouvre-sur-toit-hotel-parisien-recolter-propres-produits-saison.webp');
 
 
 CREATE TABLE needs (
@@ -72,8 +72,8 @@ INSERT INTO needs (title, description, project_id, completed) VALUES
 ('1 architecte', 'Concevoir une étude de faisabilité du projet sur le site la Vallée', 4, TRUE),
 ('1 mettreur', 'Réaliser les mesures necessaires lors de la construction', 4, FALSE),
 ('1 chargé de travaux', 'Prendre en charge la direction d’une équipe de 90 personnes chargée de la réalisation des travaux', 4, FALSE),
-('3 jardiniers paysagistes', 'L’équipe de jardinier sera chargée de la réalisation du jardin', 4, TRUE),
-('1 maçon', 'Construire les bacs necessaires selon les plans de l’architecte', 4, TRUE),
+('3 jardiniers paysagistes', 'L’équipe de jardinier sera chargée de la réalisation du jardin', 5, TRUE),
+('1 maçon', 'Construire les bacs necessaires selon les plans de l’architecte', 5, TRUE),
 ('armes automatiques', '2 armes automatiques avec munitions', 2, FALSE);
 
 CREATE TABLE comments (
