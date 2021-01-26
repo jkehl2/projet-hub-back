@@ -39,7 +39,8 @@ class ProjectDataSource extends DataSource {
             AND long > $2
             AND lat < $3 
             AND long < $4
-            AND archived = $5
+            AND (archived = $5
+            OR archived = FALSE)
             `, [
                 geoMin.latitude,
                 geoMin.longitude, 

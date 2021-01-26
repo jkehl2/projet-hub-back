@@ -8,7 +8,7 @@ const schema = gql`
 
 # On va commencer par définir des "entités"
 
-input NeedInput {
+input NewNeedInput {
 
     title: String!
 
@@ -16,6 +16,7 @@ input NeedInput {
 
     project: ID
 }
+
 
 type Project {
     # Chaque propriété à un nom et un type
@@ -166,7 +167,7 @@ type Mutation {
         image: String,
         file: String,
         author: ID!,
-        needs: [NeedInput]
+        needs: [NewNeedInput]
 
     ): Project
 

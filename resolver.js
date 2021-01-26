@@ -73,7 +73,7 @@ module.exports = {
 
         async insertProject(_, args, context) {
             if (!context.user) 
-                throw "project deletion requires authentification";
+                throw "project creation requires authentification";
             else{
                 const newProject = await context.dataSources.project.insertProject(args);
                 for(const need of args.needs){
@@ -82,6 +82,14 @@ module.exports = {
                     newProject.needs.push(await context.dataSources.need.insertNeed(need, context.user))
                 }
                 return newProject;
+            }
+        },
+
+        async editProject(_, args, context) {
+            if (!context.user) 
+                throw "project edit requires authentification";
+            else{
+                return await context.dataSources.project.editProject(args);
             }
         },
     
