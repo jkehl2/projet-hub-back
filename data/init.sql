@@ -26,7 +26,7 @@ CREATE TABLE projects (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    expiration_date TIMESTAMP NOT NULL,
+    expiration_date TIMESTAMPTZ NOT NULL,
     title TEXT NOT NULL,
     description TEXT NOT NULL,
     location TEXT NOT NULL,
@@ -65,11 +65,16 @@ CREATE TABLE needs (
 );
 
 
-INSERT INTO needs (title, description, project_id) VALUES
-('besoin test', 'ceci est un besoin', 1),
-('un chauffeur', 'necessite un chauffeur avec véhicule vers 12h00', 2),
-('5 developpeurs', 'Necessite 5 fantastiques developpeurs  en JS', 3),
-('armes automatiques', '2 armes automatiques avec munitions', 2);
+INSERT INTO needs (title, description, project_id, completed) VALUES
+('besoin test', 'ceci est un besoin', 1, FALSE),
+('un chauffeur', 'necessite un chauffeur avec véhicule vers 12h00', 2, FALSE),
+('5 developpeurs', 'Necessite 5 fantastiques developpeurs  en JS', 3, FALSE),
+('1 architecte', 'Concevoir une étude de faisabilité du projet sur le site la Vallée', 4, TRUE),
+('1 mettreur', 'Réaliser les mesures necessaires lors de la construction', 4, FALSE),
+('1 chargé de travaux', 'Prendre en charge la direction d’une équipe de 90 personnes chargée de la réalisation des travaux', 4, FALSE),
+('3 jardiniers paysagistes', 'L’équipe de jardinier sera chargée de la réalisation du jardin', 4, TRUE),
+('1 maçon', 'Construire les bacs necessaires selon les plans de l’architecte', 4, TRUE),
+('armes automatiques', '2 armes automatiques avec munitions', 2, FALSE);
 
 CREATE TABLE comments (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
