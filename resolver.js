@@ -101,6 +101,18 @@ module.exports = {
                 return await context.dataSources.project.deleteProject(args.id, context.user);
             }
         },
+
+        async insertNeeds(_, args, context) {
+            if (!context.user) 
+                throw "project edit requires authentification";
+            else{
+                const needsCreated =[];
+                for(const need of args.needs){
+                    needsCreated.push(await context.dataSources.need.insertNeed(need, context.user))
+                }
+                return needsCreated
+            }
+        },
     },
 
     Project: {

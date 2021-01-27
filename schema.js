@@ -14,7 +14,7 @@ input NeedInput {
 
     description: String!
 
-    project: ID
+    project_id: ID
 }
 
 
@@ -193,11 +193,9 @@ type Mutation {
 
     deleteProject(id: ID!): Payload
 
-    insertNeed(
-        title: String!,
-        description: String!,
-        project_id: ID!
-    ): Need
+    insertNeeds(
+        needs: [NeedInput]
+    ): [Need]
 
     editNeed(
         id: ID!,

@@ -37,9 +37,9 @@ class NeedDataSource extends DataSource {
     }
 
     async insertNeed(need, user) {
-        if (!this.checkUserPermission(need, user))
+        const userCheck = await this.checkUserPermission(need, user);
+        if(!userCheck)
             throw "Project edit not allowed with this user profile";
-
         const newNeed = await this.client.query(
             `INSERT INTO needs
                 (title, description, project_id)
@@ -47,13 +47,14 @@ class NeedDataSource extends DataSource {
              RETURNING *`,
             [need.title, need.description, need.project_id]
              );
+             console.log(newNeed.rows[0]);
         return newNeed.rows[0];
     };
 
     async editNeed(need, user) {
-        if (!this.checkUserPermission(need, user))
+        const userCheck = await this.checkUserPermission(need, user);
+        if(!userCheck)
             throw "Project edit not allowed with this user profile";
-
         const needUpdated = await this.client.query(`
             UPDATE needs
             SET
@@ -68,7 +69,8 @@ class NeedDataSource extends DataSource {
     };
 
     async deleteNeed(need, user) {
-        if (!this.checkUserPermission(need, user))
+        const userCheck = await this.checkUserPermission(need, user);
+        if(!userCheck)
             throw "Project edit not allowed with this user profile";
 
         const deletion = await this.client.query(`
@@ -151,16 +153,21 @@ class NeedDataSource extends DataSource {
                 'SELECT * FROM projects WHERE id = $1',
                 [projectId]);
         });
+        console.log(projectSearch.rows)
 
         const projectToUpdade = projectSearch.rows[0];
-
+        console.log(`user ${user.id}`)
         if (!projectToUpdade)
             throw "project to update not found";
 
-        if (projectToUpdade.author != user.id)
+        if (projectToUpdade.author !== user.id) {
+            console.log("user not authorized")
             return false;
-        else
+        } else {
+            console.log(`user ${user.id} authorized`)
             return true;
+        }
+            
     }
 
 
