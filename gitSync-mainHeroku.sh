@@ -8,6 +8,9 @@ read commitName
 git add .
 git commit -m "$commitName"
 git push
+git checkout main
+git merge develop
+git push
 git push heroku
 # Sync parent repo
 cd ..
