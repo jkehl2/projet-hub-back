@@ -27,26 +27,37 @@ class NeedDataSource extends DataSource {
         });
     }
 
-    async findFavoritesByProjectId(projectId) {
-        const cacheKey = "favoritesByProject"+ projectId.toString();
+    // async findFavoritesByProjectId(projectId) {
+    //     const cacheKey = "favoritesByProject"+ projectId.toString();
+    //     return cache.wrapper(cacheKey,async () => {
+    //         await this.favoritesByProjectLoader.clear(projectId);
+    //         return await this.favoritesByProjectLoader.load(projectId);
+    //     });
+    // }
+
+    async findFavoritesByUserId(userId) {
+        const cacheKey = "favoritesProjectByUser"+ userId.toString();
         return cache.wrapper(cacheKey,async () => {
-            await this.favoritesByProjectLoader.clear(projectId);
-            return await this.favoritesByProjectLoader.load(projectId);
+            const result = await this.client.query(
+                'SELECT * FROM favorites WHERE user_id = $1',
+                [userId]);
+            const favorites = result.rows;
+
+            return favorites;
         });
     }
 
-    async findFavoriteProjectsByUserId(userId) {
-            const cacheKey = "favoritesProjectByUser"+ userId.toString();
-            return cache.wrapper(cacheKey,async () => {
-                const result = await this.client.query(
-                    'SELECT * FROM favorites WHERE user_id = $1',
-                    [userId]);
-                const favorites = result.rows;
+    async findFavoritesByProjectId(projectId) {
+        const cacheKey = "favoriteByProject"+ projectId.toString();
+        console.log(`favorite By Project ${projectId}`)
+        return cache.wrapper(cacheKey,async () => {
+            const result = await this.client.query(
+                'SELECT * FROM favorites WHERE project_id = $1',
+                [projectId]);
+            const favorites = result.rows;
 
-                return favorites;
-            });
-
-
+            return favorites;
+        });
     }
 
     async findProjectById(projectId) {

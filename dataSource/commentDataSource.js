@@ -1,5 +1,7 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
+const timestampConverter = require('./timestampConverter')
+
 
 class CommentDataSource extends DataSource {
 
@@ -35,54 +37,34 @@ class CommentDataSource extends DataSource {
         return await this.commentsByProjectLoader.load(projectId);
     }
 
-    // Le constructeur de dataLoader reçoit une fonction
-    // qui a pour paramètre une liste d'élément à récupérer
     commentLoader = new DataLoader(async (ids) => {
         console.log('Running batch function categoriesLoader with', ids);
-        // Dans mon loader
-        // Je dois trouver un moyen de récupérer les categories correspondants
-        // aux id qui me sont donnés
-
-        // On fait une requête SQL pour récupérer un batch de catégorie
-        const result = await this.client.query(
+          const result = await this.client.query(
             'SELECT * FROM comments WHERE id = ANY($1)',
             [ids]);
 
-        // La fonction ANY ne garantie pas d'ordre on va donc s'assurer de regroupe
-        // nos categorie sous la forme d'une tableau
-        const data = ids.map(id => {
-            // Je prend le tableau d'id qui m'est passé en paramètre
-            // je cherche dans le résultat de ma requête SQL
-            // les categories correspondantes histoire d'assurer l'ordre
-            return result.rows.find( author => author.id == id);
+          const data = ids.map(id => {
+                 return result.rows.find( author => author.id == id);
         });
+        timestampConverter.toIso(data);
 
         return data;
     });
 
     commentsByProjectLoader = new DataLoader(async (ids) => {
 
-        console.log('Running batch function projectsByAuthor with', ids);
+        console.log('Running batch function projectsByProject with', ids);
 
         const result = await this.client.query(
             'SELECT * FROM comments WHERE project_id = ANY($1)',
             [ids]);
 
-        // La fonction ANY ne garantie pas d'ordre on va donc s'assurer de regroupe
-        // nos post sous la forme d'une tableau
-        const data = ids.map(id => {
-            // Je prend le tableau d'id qui m'est passé en paramètre
-            // je cherche dans le résultat de ma requête SQL
-            // les categories correspondantes histoire d'assurer l'ordre
-            return result.rows.filter( comment => comment.project_id == id);
+          const data = ids.map(id => {
+               return result.rows.filter( comment => comment.project_id == id);
         });
 
-        // Ici je dois renvoyer :
-        // [
-        //    [la liste des post de category_id 4 ],
-        //    [la liste des post de category_id 3 ],
-        //    [la liste des post de category_id 5 ]
-        // ]
+        timestampConverter.toIso(data[0]);
+
         return data;
     });
 }

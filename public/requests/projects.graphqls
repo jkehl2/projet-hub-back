@@ -24,14 +24,16 @@
       comments{
         content
       }
-}
+      followers{
+        name
+      }
+  }
 }
 # No query variables required
  
 #-------------------------------------------------
 
 #OK Return one project with all datas according one specified Id
-
 query GetProjectByID($id: ID!) {
   project(id: $id) {
       id
@@ -45,6 +47,7 @@ query GetProjectByID($id: ID!) {
       image
       archived
       author{
+        id
         name
         email
       }
@@ -54,8 +57,18 @@ query GetProjectByID($id: ID!) {
       }
       comments{
         content
+        author{
+          name
+          email
+          created_at
+        }
+      }
+      followers{
+        id
+        name
       }
   }
+  
 }
 #query variables
 {
@@ -67,7 +80,7 @@ query GetProjectByID($id: ID!) {
 
 query GetProjectsByAuthorID ($id: ID!){
   user(id: $id){
-    projects{
+    projectsCreated{
       id
       title
       description
@@ -94,10 +107,13 @@ query GetProjectsByAuthorID ($id: ID!){
 
 #OK Return projects related to geo position and scope (in meters)
 
+
 query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: Boolean!) {
   projectsByGeo(lat: $lat, long: $long, scope: $scope, archived: $archived) {
     title
     description
+    created_at
+    expiration_date
     location
     lat
     long
@@ -105,7 +121,13 @@ query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: B
       name
       email
     }
-  }
+    needs{
+      id
+      title
+      completed
+    }
+
+    }
   
 }
 #query variables
@@ -128,7 +150,8 @@ mutation CreateProject(
         $long: Float!,
         $image: String,
         $file: String,
-        $author: ID!
+        $author: ID!,
+        $needs: [NeedInput]
 ) {
   insertProject(
         title: $title,
@@ -139,11 +162,23 @@ mutation CreateProject(
         long: $long,
         image: $image,
         file: $file,
-        author: $author
+        author: $author,
+        needs: $needs
   ) {
     id
     title
     description
+    created_at
+    needs{
+      id
+      title
+      project{
+        id
+        title}
+    }
+    author{
+      name
+    }
   }
 }
 #query variables
@@ -156,7 +191,17 @@ mutation CreateProject(
 	"long": 1.0001,
 	"image": "",
 	"file": "",
-	"author": 1
+	"author": 1,
+	"needs": [
+		{
+			"title": "new need",
+			"description": "new need description"
+		},
+		{
+			"title": "new need 2",
+			"description": "new need description"
+		}
+	]
 }
 #-------------------------------------------------
 

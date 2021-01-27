@@ -8,7 +8,7 @@ const schema = gql`
 
 # On va commencer par définir des "entités"
 
-input NewNeedInput {
+input NeedInput {
 
     title: String!
 
@@ -51,12 +51,16 @@ type Project {
 
     comments: [Comment]
 
-    followers: [Favorite]
+    followers: [User]
 
 }
 
 type User {
     id: ID!
+
+    created_at: String!
+
+    updated_at: String!
 
     name: String!
 
@@ -66,11 +70,11 @@ type User {
 
     avatar: String
 
-    projects: [Project]
+    projectsCreated: [Project]
 
     activated: Boolean
 
-    favorites: [Project]
+    projectsFollowed: [Project]
 
 }
 
@@ -88,6 +92,10 @@ type Need {
 
 type Comment {
     id: ID!
+
+    created_at: String!
+
+    updated_at: String!
 
     content: String!
 
@@ -167,7 +175,7 @@ type Mutation {
         image: String,
         file: String,
         author: ID!,
-        needs: [NewNeedInput]
+        needs: [NeedInput]
 
     ): Project
 

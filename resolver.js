@@ -89,12 +89,18 @@ module.exports = {
             if (!context.user) 
                 throw "project edit requires authentification";
             else{
-                return await context.dataSources.project.editProject(args);
+                return await context.dataSources.project.editProject(args, context.user);
             }
         },
     
 
-
+        async deleteProject(_, args, context) {
+            if (!context.user) 
+                throw "project edit requires authentification";
+            else{
+                return await context.dataSources.project.deleteProject(args.id, context.user);
+            }
+        },
     },
 
     Project: {
@@ -115,19 +121,25 @@ module.exports = {
 
         async followers(project, _, context) {
             const projectId = project.id;
-            return await context.dataSources.favorite.findFavoritesByProjectId(projectId);
-        },
+            const favorites = await context.dataSources.favorite.findFavoritesByProjectId(projectId);
+            const followersIds = favorites.map(favorite => favorite['user_id'])
+            const followers = [];
+            for(const followerId of followersIds){
+                followers.push(await context.dataSources.user.findUserById(followerId))
+            };
+            return followers;
+        }
     },
 
     User: {
-        async projects(user, _, context) {
+        async projectsCreated(user, _, context) {
             const userId = user.id;
             return await context.dataSources.project.findProjectsByAuthorId(userId);
         },
 
-        async favorites(user, _, context) {
+        async projectsFollowed(user, _, context) {
             const userId = user.id;
-            const favorites = await context.dataSources.favorite.findFavoriteProjectsByUserId(userId);
+            const favorites = await context.dataSources.favorite.findFavoritesByUserId(userId);
             const projectsIds = favorites.map(favorite => favorite['project_id'])
             const projects = [];
             for(const projectId of projectsIds){

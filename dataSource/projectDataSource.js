@@ -2,6 +2,7 @@ const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
 const cache = require('./cache');
 const geolib = require('geolib');
+const timestampConverter = require('./timestampConverter')
 
 class ProjectDataSource extends DataSource {
 
@@ -15,8 +16,9 @@ class ProjectDataSource extends DataSource {
     }
 
     async findAllProjects() {
-        const result = await this.client.query('SELECT * FROM projects');
-        return result.rows;
+        const data = await this.client.query('SELECT * FROM projects');
+        timestampConverter.toIso(data.rows);
+        return data.rows;
     }
 
     async findProjectById(projectId) {
@@ -34,7 +36,7 @@ class ProjectDataSource extends DataSource {
                 {latitude: lat, longitude: long},
                 scope
             )
-            const result = await this.client.query(`SELECT * FROM projects 
+            const data = await this.client.query(`SELECT * FROM projects 
             WHERE lat > $1
             AND long > $2
             AND lat < $3 
@@ -48,9 +50,11 @@ class ProjectDataSource extends DataSource {
                 geoMax.longitude,
                 archived
             ]);
-            return result
+            timestampConverter.toIso(data.rows);
+            return data.rows
         })
-        return results.rows;
+
+        return results;
     }
 
     async findProjectsByAuthorId(userId) {
@@ -70,6 +74,8 @@ class ProjectDataSource extends DataSource {
              RETURNING *`,
             [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.author]
              );
+        timestampConverter.toIso(newProject.rows);
+
         return newProject.rows[0];
     };
 
@@ -81,7 +87,7 @@ class ProjectDataSource extends DataSource {
         if (projectToUpdade.author != user.id)
             throw "Project edit not allowed with this user profile";
         
-        const newProject = await this.client.query(`
+        const updatedProject = await this.client.query(`
             UPDATE projects
             SET 
                 title = $1, 
@@ -96,7 +102,8 @@ class ProjectDataSource extends DataSource {
             RETURNING *`,
             [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id]
              );
-        return newProject.rows[0];
+        timestampConverter.toIso(updatedProject.rows);
+        return updatedProject.rows[0];
     };
 
     async deleteProject(projectId, user) {
@@ -132,6 +139,8 @@ class ProjectDataSource extends DataSource {
         const data = ids.map(id => {
             return result.rows.find( project => project.id == id);
         });
+
+        timestampConverter.toIso(data);
         return data;
     });
 
@@ -145,6 +154,9 @@ class ProjectDataSource extends DataSource {
         const data = ids.map(id => {
                return result.rows.filter( project => project.author == id);
         });
+        console.log(data[0])
+        timestampConverter.toIso(data[0]);
+
       return data;
     });
 

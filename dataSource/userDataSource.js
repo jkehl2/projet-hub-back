@@ -1,6 +1,8 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
 const cache = require('./cache');
+const timestampConverter = require('./timestampConverter')
+
 
 
 class UserDataSource extends DataSource {
@@ -15,6 +17,7 @@ class UserDataSource extends DataSource {
 
     async findAllUsers() {
         const result = await this.client.query('SELECT * FROM users');
+        timestampConverter.toIso(result.rows);
         return result.rows;
     }
 
@@ -33,6 +36,8 @@ class UserDataSource extends DataSource {
                 VALUES ($1, $2, crypt($3,gen_salt('md5'))) RETURNING *`,
             [user.name, user.email, user.password]
                 );
+
+        timestampConverter.toIso(savedUser.rows);
         return savedUser.rows[0];
     };
 
@@ -48,6 +53,7 @@ class UserDataSource extends DataSource {
              `,
             [newInfos.name, newInfos.email, user.id]
              );
+        timestampConverter.toIso(savedUser.rows);
         return savedUser.rows[0];
     };
 
@@ -62,6 +68,7 @@ class UserDataSource extends DataSource {
              `,
             [newInfos.avatar, user.id]
              );
+        timestampConverter.toIso(savedUser.rows);
         return savedUser.rows[0];
     };
 
@@ -76,6 +83,7 @@ class UserDataSource extends DataSource {
              `,
             [newInfos.password, user.id]
              );
+        timestampConverter.toIso(savedUser.rows);
         return savedUser.rows[0];
     };
 
@@ -91,21 +99,22 @@ class UserDataSource extends DataSource {
         return {infos: deletion.rows[0]['?column?']};
     };
 
-    async findUserByEmail(email) {
-        const user = await this.client.query(
-            'SELECT * FROM users WHERE email LIKE $1',
-            [email]);
+    // async findUserByEmail(email) {
+    //     const user = await this.client.query(
+    //         'SELECT * FROM users WHERE email LIKE $1',
+    //         [email]);
 
-        if (user.rowCount > 0){
-            console.log("user found");
+    //     if (user.rowCount > 0){
+    //         console.log("user found");
 
-        } else {
-            console.log("user not found");
+    //     } else {
+    //         console.log("user not found");
             
-        }
-        return user.rows[0];                
+    //     }
 
-    };
+    //     return user.rows[0];                
+
+    // };
 
     userLoader = new DataLoader(async (ids) => {
         console.log('Running batch function user Loader with', ids);
@@ -116,6 +125,7 @@ class UserDataSource extends DataSource {
         const data = ids.map(id => {
             return result.rows.find( author => author.id == id);
         });
+        timestampConverter.toIso(data);
         return data;
     });
 
