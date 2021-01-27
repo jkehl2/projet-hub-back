@@ -364,49 +364,9 @@ mutation archiveProject($id: ID!) {
 
 #---------------------------NEEDS-----------------------------------------
 
-# Create new need on specified project id & return created need
-
-mutation createNeed($title: String!, $description: String!, $project_id: ID!) {
-  insertNeed(title: $title, description: $description, project_id: $project_id) {
-    id
-    title
-    description
-    project_id
-    completed
-  }
-}
-
-
-# Update new need with specified id & return updated need
-
-mutation updateNeed($title: String!, $description: String!, $id: ID!) {
-  updateNeed(id: $id, title: $title, description: $description) {
-    id
-    title
-    description
-    project_id
-    completed
-  }
-}
-
-
-# Complete need with specified id & return updated need
-
+# 
 mutation completeNeed($id: ID!) {
   completeNeed(id: $id) {
-    id
-    title
-    description
-    project_id
-    completed
-  }
-}
-
-
-# Complete need with specified id & return updated need
-
-mutation deleteNeed($id: ID!) {
-  deleteNeed(id: $id) {
     id
     title
     description
