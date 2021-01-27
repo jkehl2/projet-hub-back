@@ -26,7 +26,6 @@ class NeedDataSource extends DataSource {
 
     async findNeedById(needId) {
         await this.needLoader.clear(needId)
-        console.log(`-- Adding ${needId} to need dataloader`);
         return await this.needLoader.load(needId);
     }
 
@@ -106,7 +105,7 @@ class NeedDataSource extends DataSource {
             // les categories correspondantes histoire d'assurer l'ordre
             return result.rows.find( author => author.id == id);
         });
-
+        console.log(data)
         return data;
     });
 
@@ -140,7 +139,8 @@ class NeedDataSource extends DataSource {
         console.log("checking permission")
         console.log(need.project_id)
         let projectId;
-        if(!need.project_id){
+        if(need.project_id === undefined){
+            console.log("project_id not found")
             const needToUpdate = await this.findNeedById(need.id)
             projectId = needToUpdate.project_id;
         }

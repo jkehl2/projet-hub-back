@@ -2,7 +2,10 @@
 #--------------------------PROJECTS---------------------------------------
 
 #OK Return all projects with all datas without filtering
-{projects{
+# ==> return an array of projects
+
+{
+  projects{
       id
       title
       description
@@ -13,14 +16,13 @@
       long
       image
       archived
+      userIsAuthor
+      isFollowed
       author{
         name
         email
       }
-      needs{
-        title
-        description
-      }
+
       comments{
         content
       }
@@ -33,7 +35,10 @@
  
 #-------------------------------------------------
 
-#OK Return one project with all datas according one specified Id
+#OK Query one project with all datas according one specified Id
+# ==> return a project object
+
+
 query GetProjectByID($id: ID!) {
   project(id: $id) {
       id
@@ -46,6 +51,8 @@ query GetProjectByID($id: ID!) {
       long
       image
       archived
+      isFollowed
+      userIsAuthor
       author{
         id
         name
@@ -67,6 +74,7 @@ query GetProjectByID($id: ID!) {
         id
         name
       }
+      
   }
   
 }
@@ -76,7 +84,9 @@ query GetProjectByID($id: ID!) {
 }
 #-------------------------------------------------
 
-#OK Return projects related to Author Id
+#OK query all projects related to Author Id
+# ==> return an array of projects
+
 
 query GetProjectsByAuthorID ($id: ID!){
   user(id: $id){
@@ -89,7 +99,8 @@ query GetProjectsByAuthorID ($id: ID!){
       location
       lat
       long
-
+      isFollowed
+      userIsAuthor
       image
       archived
       author{
@@ -106,7 +117,8 @@ query GetProjectsByAuthorID ($id: ID!){
 #-------------------------------------------------
 
 #OK Return projects related to geo position and scope (in meters)
-
+# Auth non required
+# ==> return an array of projects
 
 query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: Boolean!) {
   projectsByGeo(lat: $lat, long: $long, scope: $scope, archived: $archived) {
@@ -117,6 +129,8 @@ query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: B
     location
     lat
     long
+    isFollowed
+    userIsAuthor
     author{
       name
       email
@@ -140,7 +154,9 @@ query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: B
 #-------------------------------------------------
 
 #OK create new project
-## AUTHENTICATION REQUIRED
+# AUTHENTICATION REQUIRED
+# ==> return the created project object
+
 mutation CreateProject(
         $title: String!,
         $description: String!,
@@ -150,7 +166,6 @@ mutation CreateProject(
         $long: Float!,
         $image: String,
         $file: String,
-        $author: ID!,
         $needs: [NeedInput]
 ) {
   insertProject(
@@ -162,13 +177,14 @@ mutation CreateProject(
         long: $long,
         image: $image,
         file: $file,
-        author: $author,
         needs: $needs
   ) {
     id
     title
     description
     created_at
+    isFollowed
+    userIsAuthor
     needs{
       id
       title
@@ -191,7 +207,6 @@ mutation CreateProject(
 	"long": 1.0001,
 	"image": "",
 	"file": "",
-	"author": 1,
 	"needs": [
 		{
 			"title": "new need",
@@ -207,6 +222,9 @@ mutation CreateProject(
 
 
 #OK Update Project with specified Id & return updated projected
+# AUTHENTICATION REQUIRED via author profile
+# ==> return the updated project object
+
 mutation EditProject(
         $id: ID!,
         $title: String!,
@@ -232,6 +250,8 @@ mutation EditProject(
     id
     title
     description
+    userIsAuthor
+
   }
 }
 
@@ -250,7 +270,9 @@ mutation EditProject(
 #-------------------------------------------------
 
 # delete project with specified ID & return message
-## requires authentification with author profile
+# AUTHENTICATION REQUIRED via author profile
+# ==> return a payload object
+
 mutation deleteProject($id: ID!) {
   deleteProject(id: $id){
       infos

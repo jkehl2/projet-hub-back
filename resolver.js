@@ -8,11 +8,33 @@ module.exports = {
         },
 
         async project(_, args, context) {
-            return await context.dataSources.project.findProjectById(args.id);
+            
+            const project = await context.dataSources.project.findProjectById(args.id, context.user);
+            
+            // if (context.user){
+            //     const favorites = await context.dataSources.favorite.findFavoritesByUserId(context.user.id);
+            //     const projectsIds = favorites.map(favorite => favorite['project_id'])
+            //     if (projectsIds.includes(project.id)){
+            //         project.isFollowed = true;
+            //     } else {
+            //         project.isFollowed = false;
+            //     }
+            //     if (project.author === context.user.id){
+            //         project.userIsAuthor = true;
+            //     } else {
+            //         project.userIsAuthor = false;
+            //     }
+                
+
+            // } else {
+            //     project.isFollowed = false;
+            //     project.userIsAuthor = false;
+            // }
+            return project;
         },
 
         async projectsByGeo(_, args, context) {
-            return await context.dataSources.project.findProjectsByGeo(args.lat,args.long, args.scope, args.archived);
+            return await context.dataSources.project.findProjectsByGeo(args.lat,args.long, args.scope, args.archived, context.user);
         },
 
         async user(_, args, context) {
@@ -25,6 +47,7 @@ module.exports = {
 
         async need(_, args, context) {
             return await context.dataSources.need.findNeedById(args.id);
+            
         },
 
         async comment(_, args, context) {
@@ -40,7 +63,8 @@ module.exports = {
 
     Mutation: {
         async insertUser(_, args, context) {
-            return await context.dataSources.user.insertUser(args);
+
+                return await context.dataSources.user.insertUser(args);
         },
 
         async editUserInfos(_, args, context) {
@@ -75,7 +99,7 @@ module.exports = {
             if (!context.user) 
                 throw "project creation requires authentification";
             else{
-                const newProject = await context.dataSources.project.insertProject(args);
+                const newProject = await context.dataSources.project.insertProject(args, context.user);
                 for(const need of args.needs){
                     need.project_id = newProject.id;
                     newProject.needs =[];
@@ -113,6 +137,22 @@ module.exports = {
                 return needsCreated
             }
         },
+
+        async editNeed(_, args, context) {
+            if (!context.user) 
+                throw "project edit requires authentification";
+            else{
+                return await context.dataSources.need.editNeed(args, context.user);
+            }
+        },
+
+        async deleteNeed(_, args, context) {
+            if (!context.user) 
+                throw "project edit requires authentification";
+            else{
+                return await context.dataSources.need.deleteNeed(args, context.user);
+            }
+        },
     },
 
     Project: {
@@ -144,9 +184,9 @@ module.exports = {
     },
 
     User: {
-        async projectsCreated(user, _, context) {
-            const userId = user.id;
-            return await context.dataSources.project.findProjectsByAuthorId(userId);
+        async projectsCreated(author, _, context) {
+            const authorId = author.id;
+            return await context.dataSources.project.findProjectsByAuthorId(authorId, context.user);
         },
 
         async projectsFollowed(user, _, context) {
@@ -182,7 +222,7 @@ module.exports = {
     Favorite: {
         async project(favorite, _, context) {
             const projectId = favorite.project_id;
-            return await context.dataSources.project.findProjectById(favorite.project_id);
+            return await context.dataSources.project.findProjectById(favorite.project_id, context.user);
         },
         async user(favorite, _, context) {
             return await context.dataSources.user.findUserById(favorite.user_id);

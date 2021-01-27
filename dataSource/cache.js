@@ -59,21 +59,26 @@ module.exports = {
     },
 
     async wrapper(key,callback){
+
+        // activate / deactivate wrapper
+        if (true === false)
+            return callback();
+        // -------------------------------
+
         const cached = await this.read(key);
         const valueAlreadyInCache = await this.has(key);
         if (!valueAlreadyInCache){
-            result = await callback();
+            const result = await callback();
             if(result){
-                console.log(`caching ${key}`);
                 await this.store(key, JSON.stringify(result));
             }
             return result;
         }else {
-            let result = JSON.parse(cached);
-            console.log(`cach found`);
+            const result = JSON.parse(cached);
+            console.log(`cache found for "${key}"`);
             return result
         }
-        // return callback();
+
     }
 
 

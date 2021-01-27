@@ -15,21 +15,28 @@ class ProjectDataSource extends DataSource {
         this.client = config.context.sqlClient;
     }
 
-    async findAllProjects() {
+    async findAllProjects(user) {
         const data = await this.client.query('SELECT * FROM projects');
         timestampConverter.toIso(data.rows);
+
+        await this.defineUserRelation(data.rows, user);
+
         return data.rows;
     }
 
-    async findProjectById(projectId) {
-        const cacheKey = "project"+ projectId.toString();
-        return cache.wrapper(cacheKey,async () => {
+    async findProjectById(projectId, user) {
+        const cacheKey = "projectById"+ projectId.toString();
+        const project = await cache.wrapper(cacheKey,async () => {
             await this.projectLoader.clear(projectId)
             return await this.projectLoader.load(projectId);
         });
+
+        await this.defineUserRelation([project], user);
+
+        return project;
     }
 
-    async findProjectsByGeo(lat, long, scope, archived) {
+    async findProjectsByGeo(lat, long, scope, archived, user) {
         const cacheKey = `projectByGeo:${lat.toString()}|${long.toString()}|${scope}|${archived}`;
         const results = await cache.wrapper(cacheKey,async () => {
             const [geoMin, geoMax] = geolib.getBoundsOfDistance(
@@ -53,30 +60,36 @@ class ProjectDataSource extends DataSource {
             timestampConverter.toIso(data.rows);
             return data.rows
         })
+        await this.defineUserRelation(results, user);
+        return results;
+    }
+
+    async findProjectsByAuthorId(authorId, user) {
+        const cacheKey = "projectsByAuthor"+ authorId.toString();
+        const results = await cache.wrapper(cacheKey,async () => {
+            await this.projectsByAuthorLoader.clear(authorId);
+            return await this.projectsByAuthorLoader.load(authorId);
+        });
+
+        await this.defineUserRelation(results, user);
 
         return results;
     }
 
-    async findProjectsByAuthorId(userId) {
-        const cacheKey = "projectsByUser"+ userId.toString();
-        return cache.wrapper(cacheKey,async () => {
-            await this.projectsByAuthorLoader.clear(userId);
-            return await this.projectsByAuthorLoader.load(userId);
-        });
-
-    }
-
-    async insertProject(project) {
-        const newProject = await this.client.query(
+    async insertProject(project, user) {
+        console.log(user)
+        const insertion = await this.client.query(
             `INSERT INTO projects
                 (title, description, expiration_date, location, lat, long, image, file, author)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
              RETURNING *`,
-            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.author]
+            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, user.id]
              );
-        timestampConverter.toIso(newProject.rows);
+        timestampConverter.toIso(insertion.rows);
+        await this.defineUserRelation(insertion.rows, user);
 
-        return newProject.rows[0];
+        const createdProject = insertion.rows[0]
+        return createdProject;
     };
 
     async editProject(project, user) {
@@ -87,7 +100,7 @@ class ProjectDataSource extends DataSource {
         if (projectToUpdade.author != user.id)
             throw "Project edit not allowed with this user profile";
         
-        const updatedProject = await this.client.query(`
+        const update = await this.client.query(`
             UPDATE projects
             SET 
                 title = $1, 
@@ -102,8 +115,11 @@ class ProjectDataSource extends DataSource {
             RETURNING *`,
             [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id]
              );
-        timestampConverter.toIso(updatedProject.rows);
-        return updatedProject.rows[0];
+        timestampConverter.toIso(update.rows);
+        await this.defineUserRelation(update.rows, user);
+
+        const updatedProject = update.rows[0]
+        return updatedProject;
     };
 
     async deleteProject(projectId, user) {
@@ -160,7 +176,41 @@ class ProjectDataSource extends DataSource {
       return data;
     });
 
+    async defineUserRelation(projects, user){
 
+        if (user !== undefined){
+            const favorites = await this.findFavoritesByUserId(user.id);
+            const projectsIds = favorites.map(favorite => favorite.project_id)
+            projects.forEach(project => {
+                if (projectsIds.includes(project.id)){
+                    project.isFollowed = true;
+                } else {
+                    project.isFollowed = false;
+                }
+                if (project.author === user.id){
+                    project.userIsAuthor = true;
+                } else {
+                    project.userIsAuthor = false;
+                }
+            });
+        } else {
+            projects.forEach(project => {
+                project.isFollowed = false;
+                project.userIsAuthor = false;
+            })
+        }
+    };
+    async findFavoritesByUserId(userId) {
+        const cacheKey = "favoritesByUser"+ userId.toString();
+        return cache.wrapper(cacheKey,async () => {
+            const result = await this.client.query(
+                'SELECT * FROM favorites WHERE user_id = $1',
+                [userId]);
+            const favorites = result.rows;
+
+            return favorites;
+        });
+    }
 
 }
 

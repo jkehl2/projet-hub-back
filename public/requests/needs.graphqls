@@ -1,0 +1,80 @@
+
+#-------------------NEEDS------------------------------
+
+# Create multiple needs given in a array for specified project id
+# AUTH REQUIRED via related project author
+# ==> return an array of created needs
+
+mutation createNeeds($needs: [NeedInput]) {
+  insertNeeds(needs: $needs) {
+    id
+    title
+    project{
+      id
+      title
+      author{
+        id
+        name
+      }
+    }
+  }
+}
+#query variables
+{
+	"needs": [
+		{
+			"project_id": 1,
+			"title": "new need",
+			"description": "new need description"
+		},
+		{
+			"project_id": 1,
+			"title": "new need 2",
+			"description": "new need description 2"
+		}
+	]
+}
+
+#------------------------------------------------
+
+
+# edit need specified by is ID
+# AUTH REQUIRED via related project author
+# ==> return the updated need
+
+mutation editNeed($title: String!, $description: String!, $id: ID! ) {
+  editNeed(title: $title, description: $description, id: $id) {
+    id
+    title
+    description
+    project{
+      title
+    }
+  }
+}
+#query variables
+{
+	"id": 30,
+	"title": "need updated",
+	"description": "description"
+}
+
+#------------------------------------------------
+
+# edit need specified by is ID
+# AUTH REQUIRED via related project author
+# ==> return a payload object
+
+mutation deleteNeed($id: ID!) {
+  deleteNeed(id: $id){
+      infos
+      errors
+  }   
+}
+
+#query variables
+{
+	"id": 1
+}
+
+#------------------------------------------------

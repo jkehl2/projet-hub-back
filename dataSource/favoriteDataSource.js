@@ -36,7 +36,7 @@ class NeedDataSource extends DataSource {
     // }
 
     async findFavoritesByUserId(userId) {
-        const cacheKey = "favoritesProjectByUser"+ userId.toString();
+        const cacheKey = "favoritesByUser"+ userId.toString();
         return cache.wrapper(cacheKey,async () => {
             const result = await this.client.query(
                 'SELECT * FROM favorites WHERE user_id = $1',
@@ -114,18 +114,18 @@ class NeedDataSource extends DataSource {
     });
    
 
-    favoritesByProjectLoader = new DataLoader(async (ids) => {
-        console.log('Running batch function favoritesByProject with', ids);
+    // favoritesByProjectLoader = new DataLoader(async (ids) => {
+    //     console.log('Running batch function favoritesByProject with', ids);
 
-        const result = await this.client.query(
-            'SELECT * FROM favorites WHERE project_id = ANY($1)',
-            [ids]);
+    //     const result = await this.client.query(
+    //         'SELECT * FROM favorites WHERE project_id = ANY($1)',
+    //         [ids]);
 
-        const data = ids.map(id => {
-                 return result.rows.filter( favorite => favorite.project_id == id);
-        });
-        return data;
-    });
+    //     const data = ids.map(id => {
+    //              return result.rows.filter( favorite => favorite.project_id == id);
+    //     });
+    //     return data;
+    // });
 
     // favoritesByUserLoader = new DataLoader(async (ids) => {
     //     console.log('Running batch function favoritesByUser with', ids);

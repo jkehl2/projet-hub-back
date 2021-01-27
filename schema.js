@@ -53,6 +53,10 @@ type Project {
 
     followers: [User]
 
+    isFollowed: Boolean
+
+    userIsAuthor: Boolean
+
 }
 
 type User {
@@ -174,9 +178,7 @@ type Mutation {
         long: Float!,
         image: String,
         file: String,
-        author: ID!,
         needs: [NeedInput]
-
     ): Project
 
     editProject(
