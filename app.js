@@ -26,14 +26,7 @@ cache.flushAll();
 //     credentials: true
 // }));
 
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'https://madly-elbow.surge.sh');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader("Access-Control-Allow-Headers", "Referer, Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization, Cookie");
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
-    next();
-});
+
 
 app.use(express.static('public'))
 
@@ -115,6 +108,15 @@ const graphQLServer = new ApolloServer({
 // Et ensuite on passe le middleware associé à express
 // chargé sur la route /graphql
 app.use(graphQLServer.getMiddleware());
+
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', 'https://madly-elbow.surge.sh');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader("Access-Control-Allow-Headers", "Referer, Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization, Cookie");
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
+    next();
+});
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('Server running on :', process.env.PORT);
