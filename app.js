@@ -61,7 +61,7 @@ app.use(session({
     resave: true,
     store: new RedisStore({ client: redisClient }),
     cookie: {
-        secure: false, // if true only transmit cookie over https
+        secure: true, // if true only transmit cookie over https
         sameSite: 'none',
         httpOnly: false, // if true prevent client side JS from reading the cookie 
         maxAge: 1000 * 60 * 60 // session max age in miliseconds
