@@ -62,8 +62,8 @@ app.use(session({
     store: new RedisStore({ client: redisClient }),
     cookie: {
         secure: false, // if true only transmit cookie over https
-        path:'https://madly-elbow.surge.sh',
-        httpOnly: true, // if true prevent client side JS from reading the cookie 
+        domain: 'https://madly-elbow.surge.sh',
+        httpOnly: false, // if true prevent client side JS from reading the cookie 
         maxAge: 1000 * 60 * 60 // session max age in miliseconds
     }
 }));
