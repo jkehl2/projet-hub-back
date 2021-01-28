@@ -62,7 +62,7 @@ app.use(session({
     store: new RedisStore({ client: redisClient }),
     cookie: {
         secure: false, // if true only transmit cookie over https
-        domain: 'https://madly-elbow.surge.sh',
+        domain: 'https://localhub-api.herokuapp.com',
         httpOnly: false, // if true prevent client side JS from reading the cookie 
         maxAge: 1000 * 60 * 60 // session max age in miliseconds
     }
