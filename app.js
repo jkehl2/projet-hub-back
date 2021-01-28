@@ -20,9 +20,10 @@ const morgan = require('morgan');
 cache.flushAll();
 
 app.use(cors({
-    origin: process.env.FRONT,
-    methods: 'GET,POST,PATCH,DELETE,OPTIONS',
-    allowedHeaders: 'Content-Type'
+    origin: ['https://madly-elbow.surge.sh/', 'http://madly-elbow.surge.sh/'],
+    methods: 'GET,POST',
+    allowedHeaders: ['Content-Type','Cookie'],
+    credentials: true
 }));
 app.use(express.static('public'))
 
