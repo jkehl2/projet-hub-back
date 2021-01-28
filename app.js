@@ -109,11 +109,13 @@ const graphQLServer = new ApolloServer({
 
 });
 
+
 // Et ensuite on passe le middleware associé à express
 // chargé sur la route /graphql
 app.use(graphQLServer.getMiddleware());
 
-server.applyMiddleware({ app, cors: corsOptions });
+graphQLServer.applyMiddleware({ app, cors: corsOptions });
+
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('Server running on :', process.env.PORT);
