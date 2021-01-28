@@ -23,13 +23,13 @@ const corsOptions = {
     origin: 'https://madly-elbow.surge.sh',
     credentials: true
 }
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', 'https://madly-elbow.surge.sh');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-//     res.setHeader("Access-Control-Allow-Headers", "Referer, Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization, Cookie");
-//     res.setHeader('Access-Control-Allow-Credentials', true);
-//     next();
-// });
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://madly-elbow.surge.sh');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+    res.setHeader("Access-Control-Allow-Headers", "Referer, Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization, Cookie");
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
 
 
 app.use(express.static('public'))
@@ -112,7 +112,7 @@ const graphQLServer = new ApolloServer({
 
 // Et ensuite on passe le middleware associé à express
 // chargé sur la route /graphql
-app.use(graphQLServer.getMiddleware());
+// app.use(graphQLServer.getMiddleware());
 
 graphQLServer.applyMiddleware({ app, cors: corsOptions });
 
