@@ -78,6 +78,16 @@ const graphQLServer = new ApolloServer({
     // et les resolvers
     resolvers: resolver,
 
+    cors: {
+        origin: 'https://madly-elbow.surge.sh',
+        methods: 'POST',
+        allowedHeaders: [
+          'Content-Type',
+          'Origin',
+          'Accept'
+        ]
+      },
+
     // J'injecte dans le "context" notre client sql
     context: ({ req,res }) => {
         // Cette méthode contexte renvoi un objet qui sera passé au DataSource
