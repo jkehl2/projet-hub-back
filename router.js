@@ -1,14 +1,7 @@
 const express = require('express');
-const authController = require('./controllers/authController');
-const isConnected = require('./middlewares/isConnected');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
-const UserDataSource = require('./dataSource/userDataSource');
 const client = require('./dataSource/client');
-const { user } = require('./dataSource');
-const bcrypt = require('bcrypt');
-
-
+const _ = require('lodash');
 
 
 
@@ -63,6 +56,90 @@ router.post("/logout", (req, res) => {
 
     });
 });
+
+
+router.post('/upload-avatar', async (req, res) => {
+    try {
+        if(!req.files) {
+            res.send({
+                status: false,
+                message: 'No file uploaded'
+            });
+        } else {
+            if(req.session.user === undefined) 
+                throw 'authentification required for avatar upload'
+            let avatar = req.files.avatar;
+
+            console.log(`uploading file "${avatar.name}"`);
+            const fileExtention = avatar.name.substr(avatar.name.indexOf("."));
+            const update = await client.query(`
+                UPDATE users
+                SET 
+                    avatar = '/avatars/'||uuid_generate_v1()||$1
+                WHERE id = $2
+                RETURNING avatar`,[fileExtention , req.session.user.id]
+            );
+            console.log(update.rows[0])
+            const filePath = update.rows[0].avatar;
+
+
+            //Use the mv() method to place the file in upload directory (i.e. "uploads")
+            avatar.mv('./public' + filePath);
+
+            //send response
+            res.json({
+                status: true,
+                message: 'File is uploaded',
+                data: {
+                    path: filePath,
+                    mimetype: avatar.mimetype,
+                    size: avatar.size
+                }
+            });
+        }
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
+
+
+// router.post('/upload-photos', async (req, res) => {
+//     try {
+//         if(!req.files) {
+//             res.send({
+//                 status: false,
+//                 message: 'No file uploaded'
+//             });
+//         } else {
+//             let data = [];
+
+            
+//             //loop all files
+//             _.forEach(_.keysIn(req.files.photos), (key) => {
+//                 let photo = req.files.photos[key];
+
+//                 //move photo to uploads directory
+//                 photo.mv('./uploads/' + photo.name);
+
+//                 //push file details
+//                 data.push({
+//                     name: photo.name,
+//                     mimetype: photo.mimetype,
+//                     size: photo.size
+//                 });
+//             });
+
+//             //return response
+//             res.send({
+//                 status: true,
+//                 message: 'Files are uploaded',
+//                 data: data
+//             });
+//         }
+//     } catch (err) {
+//         res.status(500).send(err);
+//     }
+// });
 
 
 

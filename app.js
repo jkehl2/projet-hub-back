@@ -9,11 +9,12 @@ const cache = require('./dataSource/cache');
 const router = require('./router');
 const bodyparser = require('body-parser');
 const session = require('express-session');
-const { user } = require('./dataSource');
+const fileUpload = require('express-fileupload');
 const connectRedis = require('connect-redis');
 const app = express();
 const redis = require('redis');
 const cors = require('cors');
+const morgan = require('morgan');
 
 
 cache.flushAll();
@@ -26,6 +27,7 @@ app.use(cors({
 app.use(express.static('public'))
 
 app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({extended: true}));
 const RedisStore = connectRedis(session);
 const redisClient = redis.createClient(process.env.REDIS_URL)
 
@@ -35,6 +37,12 @@ redisClient.on('error', function (err) {
 redisClient.on('connect', function (err) {
     console.log('Connected to redis successfully');
 });
+
+app.use(morgan('dev'));
+app.use(fileUpload({
+    createParentPath: true
+}));
+
 
 app.use(session({
     //mot de passe servant à crypter les infos

@@ -19,4 +19,4 @@ git commit -m "$commitName"
 git push
 cd $submodule
 
-echo "----- sync completed ------"
+echo "------ sync completed ------"

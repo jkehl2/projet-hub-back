@@ -114,16 +114,26 @@ type Favorite {
     project: Project!
 }
 
+type File {
+    filename: String!
+    mimetype: String!
+    encoding: String!
+}
+
 type Payload {
     infos: String
     errors: String
 }
+
+
 
 # On finit notre schéma par un type spécial
 # Le type Query
 # Il s'agirat des "points d'entrées" pour demander des données
 
 type Query {
+
+    readError: String
 
     project(id: ID!): Project
     projectsByGeo(lat: Float!, long: Float!, scope: Float!, archived: Boolean): [Project]
@@ -141,6 +151,8 @@ type Query {
 
     favorite(id: ID!): Favorite
     favorites: [Favorite]
+
+    uploads: [File]
 
 
 }
@@ -214,6 +226,8 @@ type Mutation {
     deleteFavorite(
         project_id: ID!
     ): Payload
+
+    singleUpload(file: Upload!): File!
 }
 `;
 
