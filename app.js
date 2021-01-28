@@ -20,7 +20,7 @@ const morgan = require('morgan');
 cache.flushAll();
 
 app.use(cors({
-    origin: '*',
+    origin: process.env.FRONT,
     methods: 'GET,POST,PATCH,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type'
 }));
@@ -55,7 +55,7 @@ app.use(session({
     cookie: {
         secure: false, // if true only transmit cookie over https
         httpOnly: false, // if true prevent client side JS from reading the cookie 
-        maxAge: 1000 * 60 * 10 // session max age in miliseconds
+        maxAge: 1000 * 60 * 60 // session max age in miliseconds
     }
 }));
 

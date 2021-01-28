@@ -42,35 +42,45 @@ class UserDataSource extends DataSource {
     };
 
     async editUserInfos(newInfos, user) {
-        const savedUser = await this.client.query(`
-            UPDATE users
-            SET 
-                name = $1,
-                email = $2
-            WHERE
-                id = $3
-            RETURNING *
-             `,
-            [newInfos.name, newInfos.email, user.id]
-             );
-        timestampConverter.toIso(savedUser.rows);
-        return savedUser.rows[0];
+        try{
+            const update = await this.client.query(`
+                UPDATE users
+                SET 
+                    name = $1,
+                    email = $2
+                WHERE
+                    id = $3
+                RETURNING *
+                `,
+                [newInfos.name, newInfos.email, user.id]
+                );
+
+            if (!update.rows[0])
+                throw "user not found"
+
+
+            timestampConverter.toIso(update.rows[0]);
+
+            return update.rows[0];
+        } catch (error) {
+            return {msg: error}
+        }
     };
 
-    async editUserAvatar(newInfos, user) {
-        const savedUser = await this.client.query(`
-            UPDATE users
-            SET 
-                avatar = $1
-            WHERE
-                id = $2
-            RETURNING *
-             `,
-            [newInfos.avatar, user.id]
-             );
-        timestampConverter.toIso(savedUser.rows);
-        return savedUser.rows[0];
-    };
+    // async editUserAvatar(newInfos, user) {
+    //     const savedUser = await this.client.query(`
+    //         UPDATE users
+    //         SET 
+    //             avatar = $1
+    //         WHERE
+    //             id = $2
+    //         RETURNING *
+    //          `,
+    //         [newInfos.avatar, user.id]
+    //          );
+    //     timestampConverter.toIso(savedUser.rows);
+    //     return savedUser.rows[0];
+    // };
 
     async editUserPassword(newInfos, user) {
         const savedUser = await this.client.query(`

@@ -69,17 +69,17 @@ module.exports = {
 
         async editUserInfos(_, args, context) {
             if (!context.user) 
-                throw "user edit requires authentification";
+            return {msg: "user deletion requires authentification"};
             else
                 return await context.dataSources.user.editUserInfos(args, context.user);
         },
 
-        async editUserAvatar(_, args, context) {
-            if (!context.user) 
-                throw "user edit requires authentification";
-            else
-                return await context.dataSources.user.editUserAvatar(args, context.user);
-        },
+        // async editUserAvatar(_, args, context) {
+        //     if (!context.user) 
+        //         throw "user edit requires authentification";
+        //     else
+        //         return await context.dataSources.user.editUserAvatar(args, context.user);
+        // },
 
         async editUserPassword(_, args, context) {
             if (!context.user) 
@@ -90,7 +90,7 @@ module.exports = {
 
         async deleteUser(_, args, context) {
             if (!context.user) 
-                return {errors: "user deletion requires authentification"};
+                return {msg: "user deletion requires authentification"};
             else
                 return await context.dataSources.user.deleteUser(context.user);
         },
@@ -228,4 +228,16 @@ module.exports = {
             return await context.dataSources.user.findUserById(favorite.user_id);
         },
     },
+
+    UserResult: {
+        __resolveType(obj, context, info){
+            if(obj.id){
+                return 'User';      
+            }      
+            if(obj.msg){        
+                return 'Error';      
+            }      
+            return null; // GraphQLError is thrown    },
+        }
+    }
 }

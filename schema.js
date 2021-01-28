@@ -125,7 +125,12 @@ type Payload {
     errors: String
 }
 
+type Error {
+    msg: String!
+    code: ID
+}
 
+union UserResult = User | Error
 
 # On finit notre schéma par un type spécial
 # Le type Query
@@ -169,10 +174,6 @@ type Mutation {
     editUserInfos(
         name: String!,
         email: String!,
-    ): User
-
-    editUserAvatar(
-        avatar: String!
     ): User
 
     editUserPassword(
@@ -227,7 +228,6 @@ type Mutation {
         project_id: ID!
     ): Payload
 
-    singleUpload(file: Upload!): File!
 }
 `;
 

@@ -1,6 +1,36 @@
 
 #-------------------USERS------------------------------
 
+
+
+type User {
+    id: ID!
+
+    created_at: String!
+
+    updated_at: String!
+
+    name: String!
+
+    email: String!
+
+    password: String!
+
+    avatar: String
+
+    projectsCreated: [Project]
+
+    activated: Boolean
+
+    projectsFollowed: [Project]
+
+}
+
+union UserResult = User | Error
+
+
+
+
 #OK Return all user data related to one given user id
 
 query GetUserByID($id: ID!) {
