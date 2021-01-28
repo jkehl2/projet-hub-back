@@ -19,19 +19,17 @@ const morgan = require('morgan');
 
 cache.flushAll();
 
-// app.use(cors({
-//     origin: ['https://madly-elbow.surge.sh/', 'http://madly-elbow.surge.sh/'],
-//     methods: 'GET,POST',
-//     allowedHeaders: ['Content-Type','Cookie'],
-//     credentials: true
-// }));
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://madly-elbow.surge.sh');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-    res.setHeader("Access-Control-Allow-Headers", "Referer, Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization, Cookie");
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-});
+const corsOptions = {
+    origin: 'https://madly-elbow.surge.sh',
+    credentials: true
+}
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', 'https://madly-elbow.surge.sh');
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+//     res.setHeader("Access-Control-Allow-Headers", "Referer, Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization, Cookie");
+//     res.setHeader('Access-Control-Allow-Credentials', true);
+//     next();
+// });
 
 
 app.use(express.static('public'))
@@ -78,8 +76,6 @@ const graphQLServer = new ApolloServer({
     // et les resolvers
     resolvers: resolver,
 
-    cors: false,
-
     // J'injecte dans le "context" notre client sql
     context: ({ req,res }) => {
         // Cette méthode contexte renvoi un objet qui sera passé au DataSource
@@ -117,7 +113,7 @@ const graphQLServer = new ApolloServer({
 // chargé sur la route /graphql
 app.use(graphQLServer.getMiddleware());
 
-
+server.applyMiddleware({ app, cors: corsOptions });
 
 app.listen(process.env.PORT || 3000, () => {
     console.log('Server running on :', process.env.PORT);
