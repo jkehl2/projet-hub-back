@@ -70,7 +70,7 @@ const graphQLServer = new ApolloServer({
         // Cette méthode contexte renvoi un objet qui sera passé au DataSource
         // via leur méthode initialze (pour faire l'injection de dépendances)
         const authHeader = req.headers.authorization;
-
+        const user = null;
         if (authHeader) {
             const token = authHeader.split(' ')[1];
             const user ={
@@ -81,12 +81,18 @@ const graphQLServer = new ApolloServer({
                 "avatar": null
               };
 
-            jwt.verify(token, accessTokenSecret, (err, user) => {
+            jwt.verify(token, accessTokenSecret, (err) => {
                 if (err) {
                     console.log("wrong id");
                 }
 
-                req.user = user
+                user ={
+                    "id": 1,
+                    "created_at": "2021-01-26T10:18:15.047Z",
+                    "name": "Michel",
+                    "email": "michel@michel",
+                    "avatar": null
+                  };
             });
         } else {
             console.log("wrong id");
@@ -94,8 +100,7 @@ const graphQLServer = new ApolloServer({
     
             
         
-        if (req.user) {
-            const user = req.user;
+        if (user !== null) {
             console.log(`user ${user.email} making queries`)
             return {
                 sqlClient: client,
