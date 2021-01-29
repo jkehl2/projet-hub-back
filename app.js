@@ -73,13 +73,6 @@ const graphQLServer = new ApolloServer({
         const user = null;
         if (authHeader) {
             const token = authHeader.split(' ')[1];
-            const user ={
-                "id": 1,
-                "created_at": "2021-01-26T10:18:15.047Z",
-                "name": "Michel",
-                "email": "michel@michel",
-                "avatar": null
-              };
 
             jwt.verify(token, accessTokenSecret, (err) => {
                 if (err) {
