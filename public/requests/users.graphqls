@@ -1,28 +1,9 @@
 
 #-------------------USERS------------------------------
 
-mutation editUserPassword($password: String!) {
-  editUserPassword(password: $password) {
-    __typename
-    ... on User{
-      id
-      name
-      email
-      
-    }
-    ... on Error{
-      error{
-        msg
-        code
-      }
-    }
-  }
-} 
-
-
 
 #OK Return all user data related to one given user id
-
+# ==> return 1 user object
 query GetUserByID($id: ID!) {
   user(id: $id){
     id
@@ -49,11 +30,24 @@ query GetUserByID($id: ID!) {
 
 #OK create new user & return created user
 ## requires unique email
+# ==> return 1 new user object OR 1 error object
+
 mutation createUser($name: String!, $email: String!,$password: String! ) {
   insertUser(name: $name, email: $email,password: $password) {
-    id
-    name
-    email
+    __typename
+    ... on User{
+      id
+      name
+      email
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
+
   }
 }
 #query variables
@@ -66,12 +60,23 @@ mutation createUser($name: String!, $email: String!,$password: String! ) {
 
 #OK update user name & email
 ## AUTHENTICATION REQUIRED
+# ==> return updated user object OR 1 error object
+
 mutation editUser($name: String!, $email: String!) {
   editUserInfos(name: $name, email: $email) {
-    id
-    name
-    email
-    avatar
+    __typename
+    ... on User{
+      id
+      name
+      email
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
   }
 } 
 #query variables
@@ -83,12 +88,23 @@ mutation editUser($name: String!, $email: String!) {
 
 #OK update user password
 ## AUTHENTICATION REQUIRED
+# ==> return updated user object OR 1 error object
+
 mutation editUserPassword($password: String!) {
   editUserPassword(password: $password) {
-    id
-    name
-    email
-    avatar
+    __typename
+    ... on User{
+      id
+      name
+      email
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
   }
 } 
 #query variables
@@ -97,30 +113,31 @@ mutation editUserPassword($password: String!) {
 }
 #------------------------------------------------
 
-#OK update user avatar
-## AUTHENTICATION REQUIRED
-mutation editUserAvatar($avatar: String!) {
-  editUserAvatar(avatar: $avatar) {
-    id
-    name
-    email
-    avatar
-  }
-} 
-#query variables
-{
-	"avatar": "avatar-image-name"
-}
-#------------------------------------------------
+
 
 #OK Delete User
 ## AUTHENTICATION REQUIRED
+# ==> return deleted user object OR 1 error object
+
+
   mutation{
     deleteUser{
-      infos
-      errors
+    __typename
+    ... on User{
+      id
+      name
+      email
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
     }
   }   
+
 # no query variables
 
 #-------------------------------------------------

@@ -126,10 +126,10 @@ class ProjectDataSource extends DataSource {
         try{
             const project = await this.findProjectById(projectId);
             if (!project)
-                throw {msg: "project to delete not found", code: 9};
+                throw {msg: "Project to delete not found", code: 11};
 
             if (project.author != user.id)
-                throw "Project deletion not allowed with this user profile";
+                throw {msg: "Current user is not author, deletion not allowed", code:10};
             
             const deletion = await this.client.query(`
                 DELETE FROM projects
@@ -142,7 +142,7 @@ class ProjectDataSource extends DataSource {
             console.log(deletion.rows[0]);
             return deletion.rows[0];
         } catch(error) {
-            return{error:{msg: error, code: 689}}
+            return{error: error}
         }
     };
 
@@ -178,27 +178,28 @@ class ProjectDataSource extends DataSource {
     });
 
     async defineUserRelation(projects, user){
-
-        if (user !== undefined){
-            const favorites = await this.findFavoritesByUserId(user.id);
-            const projectsIds = favorites.map(favorite => favorite.project_id)
-            projects.forEach(project => {
-                if (projectsIds.includes(project.id)){
-                    project.isFollowed = true;
-                } else {
+        if(projects[0]!== undefined){
+            if (user !== undefined){
+                const favorites = await this.findFavoritesByUserId(user.id);
+                const projectsIds = favorites.map(favorite => favorite.project_id)
+                projects.forEach(project => {
+                    if (projectsIds.includes(project.id)){
+                        project.isFollowed = true;
+                    } else {
+                        project.isFollowed = false;
+                    }
+                    if (project.author === user.id){
+                        project.userIsAuthor = true;
+                    } else {
+                        project.userIsAuthor = false;
+                    }
+                });
+            } else {
+                projects.forEach(project => {
                     project.isFollowed = false;
-                }
-                if (project.author === user.id){
-                    project.userIsAuthor = true;
-                } else {
                     project.userIsAuthor = false;
-                }
-            });
-        } else {
-            projects.forEach(project => {
-                project.isFollowed = false;
-                project.userIsAuthor = false;
-            })
+                })
+            }
         }
     };
     async findFavoritesByUserId(userId) {

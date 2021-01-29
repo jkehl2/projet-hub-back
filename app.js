@@ -79,12 +79,12 @@ const graphQLServer = new ApolloServer({
                 result = jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
                 console.log(result);
                 user = result;
-                
+
             } catch (error){
 
                 switch(error.name){
                     case "TokenExpiredError":{
-                        console.log("session expirée");
+                        console.log("Session expired");
                         return {
                             sqlClient: client,
                             error: error.name, 
@@ -104,7 +104,7 @@ const graphQLServer = new ApolloServer({
         } else {
             return {
                 sqlClient: client,
-                error: "not authorized, unindentified user making query", 
+                error: "Not authorized, this query requires user login", 
                 code: 9
             };
         }

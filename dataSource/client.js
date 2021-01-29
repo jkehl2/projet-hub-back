@@ -6,6 +6,7 @@ const pool = new Pool({connectionString: process.env.DATABASE_URL});
 // Une "enveloppe" autour de la méthode query du pool
 // On va s'en servir pour faire des console.log de nos requêtes
 module.exports = {
+    
     query(...params) { // Je pack les paramètres en un seul tableau
 
         console.log('SQL :', ...params);

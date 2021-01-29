@@ -30,114 +30,107 @@ class UserDataSource extends DataSource {
     };
 
     async insertUser(user) {
-        const savedUser = await this.client.query(
-            `INSERT INTO users
-                (name, email, password)
-                VALUES ($1, $2, crypt($3,gen_salt('md5'))) RETURNING *`,
-            [user.name, user.email, user.password]
-                );
+        try{ 
+            const insertion = await this.client
+                .query(`
+                    INSERT INTO users(
+                        name, 
+                        email, 
+                        password)
+                    VALUES (
+                        $1, 
+                        $2, 
+                        crypt($3,gen_salt('md5'))) 
+                    RETURNING *`,
+                    [user.name, user.email, user.password])
+                .catch(error => {throw {msg:error.stack,code:error.code}})
 
-        timestampConverter.toIso(savedUser.rows);
-        return savedUser.rows[0];
+            timestampConverter.toIso(insertion.rows);
+            
+            return insertion.rows[0];
+
+        } catch (error) {
+            return{error: error}
+        }
     };
 
     async editUserInfos(newInfos, user) {
         try{
-            const update = await this.client.query(`
-                UPDATE users
-                SET 
-                    name = $1,
-                    email = $2
-                WHERE
-                    id = $3
-                RETURNING *
-                `,
-                [newInfos.name, newInfos.email, user.id]
-                );
+            const update = await this.client
+                .query(`
+                    UPDATE users
+                    SET 
+                        name = $1,
+                        email = $2
+                    WHERE
+                        id = $3
+                    RETURNING *
+                    `,
+                    [newInfos.name, newInfos.email, user.id])
+                .catch(error => {throw {msg:error.stack,code:error.code}})
 
             if (!update.rows[0])
-                throw "user not found"
+                throw {msg:"User not found", code:"10"}
 
 
             timestampConverter.toIso(update.rows[0]);
 
             return update.rows[0];
         } catch (error) {
-            return {msg: error}
+            return{error: error}
         }
     };
 
-    // async editUserAvatar(newInfos, user) {
-    //     const savedUser = await this.client.query(`
-    //         UPDATE users
-    //         SET 
-    //             avatar = $1
-    //         WHERE
-    //             id = $2
-    //         RETURNING *
-    //          `,
-    //         [newInfos.avatar, user.id]
-    //          );
-    //     timestampConverter.toIso(savedUser.rows);
-    //     return savedUser.rows[0];
-    // };
 
     async editUserPassword(newInfos, user) {
-        const savedUser = await this.client.query(`
-            UPDATE users
-            SET 
-                password = crypt($1,gen_salt('md5'))
-            WHERE
-                id = $2
-            RETURNING *
-             `,
-            [newInfos.password, user.id]
-             );
-        timestampConverter.toIso(savedUser.rows);
-        return savedUser.rows[0];
+        try{
+            const update = await this.client
+            .query(`
+                UPDATE users
+                SET 
+                    password = crypt($1,gen_salt('md5'))
+                WHERE
+                    id = $2
+                RETURNING *
+                `,
+                [newInfos.password, user.id])
+            .catch(error => {throw {msg:error.stack,code:error.code}})
+            
+            if (!update.rows[0])
+                throw {msg:"User not found", code:"10"}
+
+            timestampConverter.toIso(update.rows[0]);
+
+            return update.rows[0];
+     } catch (error) {
+         return{error: error}
+     }
     };
 
     async deleteUser(user) {
-        const deletion = await this.client.query(`
-            DELETE FROM users
-            WHERE
-                id = $1
-            RETURNING 'Deletion completed'
-             `,
-            [user.id]
-             );
-        return {infos: deletion.rows[0]['?column?']};
+        try{
+            const deletion = await this.client
+            .query(`
+                DELETE FROM users
+                WHERE
+                    id = $1
+                RETURNING *
+                `,
+                [user.id]
+                )
+            .catch(error => {throw {msg:error.stack,code:error.code}})
+            
+            if (!deletion.rows[0])
+                throw {msg:"User not found", code:"10"}
+            
+            timestampConverter.toIso(deletion.rows[0]);
+            return deletion.rows[0];
+
+        } catch (error) {
+            return{error: error}
+        }
     };
 
-    // async findUserByEmail(email) {
-    //     const user = await this.client.query(
-    //         'SELECT * FROM users WHERE email LIKE $1',
-    //         [email]);
-
-    //     if (user.rowCount > 0){
-    //         console.log("user found");
-
-    //     } else {
-    //         console.log("user not found");
-            
-    //     }
-
-    //     return user.rows[0];                
-
-    // };
-
-    userLoader = new DataLoader(async (ids) => {
-        console.log('Running batch function user Loader with', ids);
-       
-        const result = await this.client.query(
-            'SELECT * FROM users WHERE id = ANY($1)',
-            [ids]);
-        const data = ids.map(id => {
-            return result.rows.find( author => author.id == id);
-        });
-        timestampConverter.toIso(data);
-        return data;
-    });
 
 
 }

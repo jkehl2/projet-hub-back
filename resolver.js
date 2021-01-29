@@ -9,8 +9,7 @@ module.exports = {
 
         async project(_, args, context) {
             
-            const project = await context.dataSources.project.findProjectById(args.id, context.user);
-            return project;
+            return await context.dataSources.project.findProjectById(args.id, context.user);
         },
 
         async projectsByGeo(_, args, context) {
@@ -49,7 +48,7 @@ module.exports = {
 
         async editUserInfos(_, args, context) {
             if (!context.user) 
-                return {msg: "user deletion requires authentification"};
+                return{error:{msg: context.error, code: context.code}}
             return await context.dataSources.user.editUserInfos(args, context.user);
         },
 
