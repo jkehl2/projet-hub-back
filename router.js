@@ -40,10 +40,9 @@ router.post('/login',async (req, res) => {
         console.log("user found");
         const user = result.rows[0];
         const accessTokenSecret = 'youraccesstokensecret';
-        const accessToken = jwt.sign({ email: user.username,  role: user.role }, accessTokenSecret);
-
+        const token = jwt.sign({ email: user.username,  role: user.role }, accessTokenSecret);
         res.json({
-            accessToken
+            token
         });
     } catch(error) {
         res.json({"error": error})

@@ -15,6 +15,8 @@ const app = express();
 const redis = require('redis');
 const cors = require('cors');
 const morgan = require('morgan');
+const jwt = require('jsonwebtoken');
+
 
 
 cache.flushAll();
@@ -74,7 +76,7 @@ const graphQLServer = new ApolloServer({
 
             jwt.verify(token, accessTokenSecret, (err, user) => {
                 if (err) {
-                    return res.sendStatus(403);
+                    return res.json("wrong id");
                 }
 
                 req.user = {
