@@ -50,6 +50,8 @@ class UserDataSource extends DataSource {
             return insertion.rows[0];
 
         } catch (error) {
+            if(error.code === "23505")
+                error.msg = "Email already used"
             return{error: error}
         }
     };
