@@ -10,26 +10,6 @@ module.exports = {
         async project(_, args, context) {
             
             const project = await context.dataSources.project.findProjectById(args.id, context.user);
-            
-            // if (context.user){
-            //     const favorites = await context.dataSources.favorite.findFavoritesByUserId(context.user.id);
-            //     const projectsIds = favorites.map(favorite => favorite['project_id'])
-            //     if (projectsIds.includes(project.id)){
-            //         project.isFollowed = true;
-            //     } else {
-            //         project.isFollowed = false;
-            //     }
-            //     if (project.author === context.user.id){
-            //         project.userIsAuthor = true;
-            //     } else {
-            //         project.userIsAuthor = false;
-            //     }
-                
-
-            // } else {
-            //     project.isFollowed = false;
-            //     project.userIsAuthor = false;
-            // }
             return project;
         },
 
@@ -69,9 +49,8 @@ module.exports = {
 
         async editUserInfos(_, args, context) {
             if (!context.user) 
-            return {msg: "user deletion requires authentification"};
-            else
-                return await context.dataSources.user.editUserInfos(args, context.user);
+                return {msg: "user deletion requires authentification"};
+            return await context.dataSources.user.editUserInfos(args, context.user);
         },
 
         // async editUserAvatar(_, args, context) {
@@ -84,74 +63,73 @@ module.exports = {
         async editUserPassword(_, args, context) {
             if (!context.user) 
                 return{error:{msg: context.error, code: context.code}}
-            else
-                return await context.dataSources.user.editUserPassword(args, context.user);
+
+            return await context.dataSources.user.editUserPassword(args, context.user);
         },
 
         async deleteUser(_, args, context) {
             if (!context.user) 
-                return {msg: "user deletion requires authentification"};
-            else
-                return await context.dataSources.user.deleteUser(context.user);
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.user.deleteUser(context.user);
         },
 
         async insertProject(_, args, context) {
             if (!context.user) 
-                throw "project creation requires authentification";
-            else{
-                const newProject = await context.dataSources.project.insertProject(args, context.user);
-                for(const need of args.needs){
-                    need.project_id = newProject.id;
-                    newProject.needs =[];
-                    newProject.needs.push(await context.dataSources.need.insertNeed(need, context.user))
-                }
-                return newProject;
+                return{error:{msg: context.error, code: context.code}}
+
+            const newProject = await context.dataSources.project.insertProject(args, context.user);
+            for(const need of args.needs){
+                need.project_id = newProject.id;
+                newProject.needs =[];
+                newProject.needs.push(await context.dataSources.need.insertNeed(need, context.user))
             }
+            return newProject;
+
         },
 
         async editProject(_, args, context) {
             if (!context.user) 
-                throw "project edit requires authentification";
-            else{
-                return await context.dataSources.project.editProject(args, context.user);
-            }
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.project.editProject(args, context.user);
+
         },
     
 
         async deleteProject(_, args, context) {
             if (!context.user) 
-                throw "project edit requires authentification";
-            else{
-                return await context.dataSources.project.deleteProject(args.id, context.user);
-            }
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.project.deleteProject(args.id, context.user);
+        
         },
 
         async insertNeeds(_, args, context) {
             if (!context.user) 
-                throw "project edit requires authentification";
-            else{
-                const needsCreated =[];
-                for(const need of args.needs){
-                    needsCreated.push(await context.dataSources.need.insertNeed(need, context.user))
-                }
-                return needsCreated
+                return{error:{msg: context.error, code: context.code}}
+            
+            const needsCreated =[];
+            for(const need of args.needs){
+                needsCreated.push(await context.dataSources.need.insertNeed(need, context.user))
             }
+            return needsCreated
+            
         },
 
         async editNeed(_, args, context) {
             if (!context.user) 
-                throw "project edit requires authentification";
-            else{
-                return await context.dataSources.need.editNeed(args, context.user);
-            }
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.need.editNeed(args, context.user);
+
         },
 
         async deleteNeed(_, args, context) {
             if (!context.user) 
-                throw "project edit requires authentification";
-            else{
-                return await context.dataSources.need.deleteNeed(args, context.user);
-            }
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.need.deleteNeed(args, context.user);
         },
     },
 
@@ -238,6 +216,42 @@ module.exports = {
                 return 'Error';      
             }      
             return null; // GraphQLError is thrown    },
+        }
+    },
+
+    ProjectResult: {
+        __resolveType(obj, context, info){
+            if(obj.id){
+                return 'Project';      
+            }      
+            if(obj.error){        
+                return 'Error';      
+            }      
+            return null; // GraphQLError is thrown    },
+        }
+    },
+
+    NeedResult: {
+        __resolveType(obj, context, info){
+            if(obj.id){
+                return 'Need';      
+            }      
+            if(obj.error){        
+                return 'Error';      
+            }      
+            return null; // GraphQLError is thrown    },
+        }
+    },
+
+    FavoriteResult: {
+        __resolveType(obj, context, info){
+            if(obj.id){
+                return 'Favorite';      
+            }      
+            if(obj.error){        
+                return 'Error';      
+            }      
+            return null;
         }
     }
 }

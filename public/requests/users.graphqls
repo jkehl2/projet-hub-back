@@ -1,33 +1,23 @@
 
 #-------------------USERS------------------------------
 
-
-
-type User {
-    id: ID!
-
-    created_at: String!
-
-    updated_at: String!
-
-    name: String!
-
-    email: String!
-
-    password: String!
-
-    avatar: String
-
-    projectsCreated: [Project]
-
-    activated: Boolean
-
-    projectsFollowed: [Project]
-
-}
-
-union UserResult = User | Error
-
+mutation editUserPassword($password: String!) {
+  editUserPassword(password: $password) {
+    __typename
+    ... on User{
+      id
+      name
+      email
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
+  }
+} 
 
 
 

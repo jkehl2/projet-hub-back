@@ -114,11 +114,6 @@ type Favorite {
     project: Project!
 }
 
-type File {
-    filename: String!
-    mimetype: String!
-    encoding: String!
-}
 
 type Payload {
     infos: String
@@ -135,14 +130,17 @@ type Error {
 }
 
 union UserResult = User | Error
+union ProjectResult = Project | Error
+union NeedResult = Need | Error
+union FavoriteResult = Favorite | Error
+
+
 
 # On finit notre schéma par un type spécial
 # Le type Query
 # Il s'agirat des "points d'entrées" pour demander des données
 
 type Query {
-
-    readError: String
 
     project(id: ID!): Project
     projectsByGeo(lat: Float!, long: Float!, scope: Float!, archived: Boolean): [Project]
@@ -161,8 +159,6 @@ type Query {
     favorite(id: ID!): Favorite
     favorites: [Favorite]
 
-    uploads: [File]
-
 
 }
 
@@ -173,12 +169,12 @@ type Mutation {
         name: String!,
         email: String!,
         password: String!
-    ): User
+    ): UserResult
 
     editUserInfos(
         name: String!,
         email: String!,
-    ): User
+    ): UserResult
 
     editUserPassword(
         password: String!
@@ -196,7 +192,7 @@ type Mutation {
         image: String,
         file: String,
         needs: [NeedInput]
-    ): Project
+    ): ProjectResult
 
     editProject(
         id: ID!,
@@ -208,19 +204,19 @@ type Mutation {
         long: Float!,
         image: String,
         file: String,
-    ): Project
+    ): ProjectResult
 
     deleteProject(id: ID!): Payload
 
     insertNeeds(
         needs: [NeedInput]
-    ): [Need]
+    ): [NeedResult]
 
     editNeed(
         id: ID!,
         title: String!,
         description: String!
-    ): Need
+    ): NeedResult
 
     deleteNeed(id: ID!): Payload
 

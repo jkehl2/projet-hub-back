@@ -40,7 +40,7 @@ router.post('/login',async (req, res) => {
         console.log("user found");
         const user = result.rows[0];
         const accessTokenSecret = 'youraccesstokensecret';
-        const token = jwt.sign({id: user.id, email: user.email}, accessTokenSecret, {expiresIn: 300});
+        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 5});
         res.json({
             token,
             user
@@ -50,16 +50,13 @@ router.post('/login',async (req, res) => {
     }
 });
 
-router.post("/logout", (req, res) => {
-    console.log(req.session.user);
-    req.session.destroy(err => {
-        if (err) {
-            return console.log(err);
-        }
-        res.json({"info": `user logged out`})
+// router.post("/logout", (req, res) => {
+//     const { token } = req.body;
+//     refreshTokens = refreshTokens.filter(token => t !== token);
+//     res.json({"info": `user logged out`})
 
-    });
-});
+// });
+
 
 
 router.post('/upload-avatar', async (req, res) => {

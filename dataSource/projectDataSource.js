@@ -126,7 +126,7 @@ class ProjectDataSource extends DataSource {
         try{
             const project = await this.findProjectById(projectId);
             if (!project)
-                throw "project to delete not found";
+                throw {msg: "project to delete not found", code: 9};
 
             if (project.author != user.id)
                 throw "Project deletion not allowed with this user profile";
@@ -135,13 +135,14 @@ class ProjectDataSource extends DataSource {
                 DELETE FROM projects
                 WHERE
                     id = $1
-                RETURNING 'Deletion completed'
+                RETURNING *
                  `,
                 [projectId]
                  );
-            return {infos: deletion.rows[0]['?column?']};
-                } catch(error) {
-            return {errors: error};
+            console.log(deletion.rows[0]);
+            return deletion.rows[0];
+        } catch(error) {
+            return{error:{msg: error, code: 689}}
         }
     };
 
