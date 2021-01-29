@@ -73,19 +73,20 @@ const graphQLServer = new ApolloServer({
 
         if (authHeader) {
             const token = authHeader.split(' ')[1];
+            const user ={
+                "id": 1,
+                "created_at": "2021-01-26T10:18:15.047Z",
+                "name": "Michel",
+                "email": "michel@michel",
+                "avatar": null
+              };
 
             jwt.verify(token, accessTokenSecret, (err, user) => {
                 if (err) {
                     return res.json("wrong id");
                 }
 
-                req.user = {
-                    "id": 1,
-                    "created_at": "2021-01-26T10:18:15.047Z",
-                    "name": "Michel",
-                    "email": "michel@michel",
-                    "avatar": null
-                  };
+                req.user = user
             });
         } else {
             res.json('no auth');
