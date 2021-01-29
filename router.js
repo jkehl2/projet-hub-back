@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const client = require('./dataSource/client');
 const _ = require('lodash');
+const jwt = require('jsonwebtoken');
 
 
 
@@ -38,9 +39,12 @@ router.post('/login',async (req, res) => {
             throw "wrong password or email";
         console.log("user found");
         const user = result.rows[0];
-            
-        req.session.user = user;
-        res.json(user);
+        const accessTokenSecret = 'youraccesstokensecret';
+        const accessToken = jwt.sign({ email: user.username,  role: user.role }, accessTokenSecret);
+
+        res.json({
+            accessToken
+        });
     } catch(error) {
         res.json({"error": error})
     }

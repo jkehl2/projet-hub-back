@@ -52,7 +52,21 @@ app.use(fileUpload({
 }));
 
 
-const accessTokenSecret = 'youraccesstokensecret';
+app.use(session({
+    //mot de passe servant à crypter les infos
+    secret: 'my super secret passphrase',
+    //va sauvegarder une nouvelle session même si elle n'est pas modifiée
+    saveUninitialized: true,
+    //resauvegarde une session à chaque requête même sans modif (pas de date d'expiration)
+    resave: true,
+    store: new RedisStore({ client: redisClient }),
+    cookie: {
+        secure: true, // if true only transmit cookie over https
+        SameSite: 'None',
+        httpOnly: false, // if true prevent client side JS from reading the cookie 
+        maxAge: 1000 * 60 * 60 * 5// session max age in miliseconds
+    }
+}));
 
 
 app.use(router);
@@ -67,32 +81,8 @@ const graphQLServer = new ApolloServer({
     context: ({ req,res }) => {
         // Cette méthode contexte renvoi un objet qui sera passé au DataSource
         // via leur méthode initialze (pour faire l'injection de dépendances)
-        const authHeader = req.headers.authorization;
-
-        if (authHeader) {
-            const token = authHeader.split(' ')[1];
-
-            jwt.verify(token, accessTokenSecret, (err, user) => {
-                if (err) {
-                    return res.sendStatus(403);
-                }
-
-                req.user = {
-                    "id": 1,
-                    "created_at": "2021-01-26T10:18:15.047Z",
-                    "name": "Michel",
-                    "email": "michel@michel",
-                    "avatar": null
-                  };
-            });
-        } else {
-            res.json('no auth');
-        }
-    
-            
-        
-        if (req.user) {
-            const user = req.user;
+        if (req.session.user) {
+            const user = req.session.user;
             console.log(`user ${user.email} making queries`)
             return {
                 sqlClient: client,
