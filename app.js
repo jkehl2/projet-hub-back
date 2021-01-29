@@ -83,13 +83,13 @@ const graphQLServer = new ApolloServer({
 
             jwt.verify(token, accessTokenSecret, (err, user) => {
                 if (err) {
-                    return res.json("wrong id");
+                    console.log("wrong id");
                 }
 
                 req.user = user
             });
         } else {
-            res.json('no auth');
+            console.log("wrong id");
         }
     
             
