@@ -71,47 +71,48 @@ const graphQLServer = new ApolloServer({
         // via leur méthode initialze (pour faire l'injection de dépendances)
         const authHeader = req.headers.authorization;
         let user = null;
-        console.log("header:", authHeader);
 
         if (authHeader) {
             const token = authHeader.split(' ')[1];
             let result = null;
             try{
-                console.log("token:", token);
-                result = jwt.verify(token, accessTokenSecret);
+                result = jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
                 console.log(result);
 
-                user ={
-                    "id": 1,
-                    "created_at": "2021-01-26T10:18:15.047Z",
-                    "name": "Michel",
-                    "email": "michel@michel",
-                    "avatar": null              
-                };
+                user = result;
             } catch (error){
-                console.log("catching error:", error)
-            }
-            
-            
 
+                switch(error.name){
+                    case "TokenExpiredError":{
+                        console.log("session expirée");
+                        return {
+                            sqlClient: client,
+                            error: error.name, 
+                            code: 1
+                        };
+                    }
+                    default:{
+                        console.log(error.message);
+                        return {
+                            sqlClient: client,
+                            error: error.name, 
+                            code: 9
+                        };
+                    }
+                }
+            } 
         } else {
-            console.log("wrong id");
-        }
-    
-            
-        
-        if (user !== null) {
-            console.log(`user ${user.email} making queries`)
             return {
                 sqlClient: client,
-                user: user
-            };
-        } else {
-            console.log(`unidendified user making queries`)
-            return {
-                sqlClient: client,
+                error: "not authorized, unindentified user making query", 
+                code: 9
             };
         }
+        return {
+            sqlClient: client,
+            user: user
+        };
+
 
     },
 

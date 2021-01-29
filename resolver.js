@@ -83,7 +83,7 @@ module.exports = {
 
         async editUserPassword(_, args, context) {
             if (!context.user) 
-                throw "user edit requires authentification";
+                return{error:{msg: context.error, code: context.code}}
             else
                 return await context.dataSources.user.editUserPassword(args, context.user);
         },
@@ -234,7 +234,7 @@ module.exports = {
             if(obj.id){
                 return 'User';      
             }      
-            if(obj.msg){        
+            if(obj.error){        
                 return 'Error';      
             }      
             return null; // GraphQLError is thrown    },

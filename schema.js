@@ -125,9 +125,13 @@ type Payload {
     errors: String
 }
 
-type Error {
-    msg: String!
+type ErrorContent {
+    msg: String
     code: ID
+}
+
+type Error {
+    error: ErrorContent!
 }
 
 union UserResult = User | Error
@@ -178,7 +182,7 @@ type Mutation {
 
     editUserPassword(
         password: String!
-    ): User
+    ): UserResult
 
     deleteUser: Payload
 
