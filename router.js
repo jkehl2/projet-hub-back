@@ -3,7 +3,7 @@ const router = express.Router();
 const client = require('./dataSource/client');
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
-
+const storeFile = require('./dataSource/storeFile')
 
 
 /** Gestion des utilisateurs */
@@ -50,30 +50,31 @@ router.post('/login',async (req, res) => {
     }
 });
 
-// router.post("/logout", (req, res) => {
-//     const { token } = req.body;
-//     refreshTokens = refreshTokens.filter(token => t !== token);
-//     res.json({"info": `user logged out`})
-
-// });
-
 
 
 router.post('/upload-avatar', async (req, res) => {
     try {
-        if(!req.files) {
+        if(!req.files) 
             res.json({
                 status: false,
                 message: 'No file uploaded'
             });
-        } else {
-            if(req.session.user === undefined) 
-                throw 'authentification required for avatar upload'
-            let avatar = req.files.avatar;
 
-            console.log(`uploading file "${avatar.name}"`);
+        const authHeader = req.headers.authorization    
+        if (!authHeader) 
+            throw "identification error"
+
+        const token = authHeader.split(' ')[1];
+
+        const accessTokenSecret = 'youraccesstokensecret';
+
+        const user = await jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
+
+        let avatar = req.files.avatar;
+
+        console.log(`uploading file "${avatar.name}"`);
          
-
+        const filePath = await storeFile.dbUpdate('users', 'avatar', 'avatars', avatar.name, user.id)
 
             //Use the mv() method to place the file in upload directory (i.e. "uploads")
             avatar.mv('./public' + filePath);
@@ -88,7 +89,7 @@ router.post('/upload-avatar', async (req, res) => {
                     size: avatar.size
                 }
             });
-        }
+        
     } catch (err) {
         res.status(500).json(err);
     }
