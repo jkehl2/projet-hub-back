@@ -220,6 +220,8 @@ type Mutation {
 
     deleteNeed(id: ID!): NeedResult
 
+    needCompletion(id: ID!, state: Boolean!): NeedResult
+
     completeNeed(id: ID!): NeedResult
 
     uncompleteNeed(id: ID!): NeedResult

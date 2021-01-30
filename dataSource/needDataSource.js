@@ -76,6 +76,30 @@ class NeedDataSource extends DataSource {
         }
 
     };
+    async needCompletion(need, user) {
+        try{
+            const userCheck = await this.checkUserPermission(need, user);
+            if(!userCheck)
+                throw {msg:"Project edit not allowed with this user profile", code:'whatever'};
+            if(userCheck.msg){
+                console.log(userCheck)
+                throw userCheck
+            }
+            const needUpdated = await this.client
+            .query(`
+                UPDATE needs
+                SET
+                    completed = $1
+                WHERE id = $2
+                RETURNING *`,
+                [need.state, need.id])
+            .catch(error => {throw {msg:error.stack,code:error.code}})
+            return needUpdated.rows[0];
+        } catch (error) {
+            return{error: error}
+        }
+        
+    };
 
     async completeNeed(need, user) {
         try{

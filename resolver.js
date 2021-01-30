@@ -131,6 +131,13 @@ module.exports = {
             return await context.dataSources.need.deleteNeed(args, context.user);
         },
 
+        async needCompletion(_, args, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.need.needCompletion(args, context.user);
+        },
+
         async completeNeed(_, args, context) {
             if (!context.user) 
                 return{error:{msg: context.error, code: context.code}}
