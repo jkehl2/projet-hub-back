@@ -130,6 +130,20 @@ module.exports = {
 
             return await context.dataSources.need.deleteNeed(args, context.user);
         },
+
+        async completeNeed(_, args, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.need.completeNeed(args, context.user);
+        },
+
+        async uncompleteNeed(_, args, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.need.uncompleteNeed(args, context.user);
+        },
     },
 
     Project: {
@@ -182,7 +196,9 @@ module.exports = {
         async project(need, _, context) {
             const projectId = need.project_id;
             return await context.dataSources.project.findProjectById(projectId);
-        }
+        },
+
+
     },
 
     Comment: {

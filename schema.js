@@ -218,7 +218,11 @@ type Mutation {
         description: String!
     ): NeedResult
 
-    deleteNeed(id: ID!): Payload
+    deleteNeed(id: ID!): NeedResult
+
+    completeNeed(id: ID!): NeedResult
+
+    uncompleteNeed(id: ID!): NeedResult
 
     insertFavorite(
         project_id: ID!
