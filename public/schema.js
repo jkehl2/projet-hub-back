@@ -206,6 +206,8 @@ type Mutation {
         file: String,
     ): ProjectResult
 
+    archiveProject(id: ID!): ProjectResult
+
     deleteProject(id: ID!): ProjectResult
 
     insertNeeds(
@@ -218,7 +220,13 @@ type Mutation {
         description: String!
     ): NeedResult
 
-    deleteNeed(id: ID!): Payload
+    deleteNeed(id: ID!): NeedResult
+
+    needCompletion(id: ID!, state: Boolean!): NeedResult
+
+    completeNeed(id: ID!): NeedResult
+
+    uncompleteNeed(id: ID!): NeedResult
 
     insertFavorite(
         project_id: ID!

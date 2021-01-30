@@ -155,8 +155,7 @@ query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: B
 
 #OK create new project
 # AUTHENTICATION REQUIRED
-# ==> return the created project object
-
+# ==> return the created project object or an error object
 mutation CreateProject(
         $title: String!,
         $description: String!,
@@ -179,21 +178,22 @@ mutation CreateProject(
         file: $file,
         needs: $needs
   ) {
-    id
-    title
-    description
-    created_at
-    isFollowed
-    userIsAuthor
-    needs{
+    __typename
+    ... on Project{
       id
       title
-      project{
-        id
-        title}
+      description
+      expiration_date
+      location
+      lat
+      long
+      
     }
-    author{
-      name
+    ... on Error{
+      error{
+        msg
+        code
+      }
     }
   }
 }
@@ -221,9 +221,9 @@ mutation CreateProject(
 #-------------------------------------------------
 
 
-#OK Update Project with specified Id & return updated projected
+#OK Update Project with specified Id 
 # AUTHENTICATION REQUIRED via author profile
-# ==> return the updated project object
+# ==> return the updated project object or an error object
 
 mutation EditProject(
         $id: ID!,
@@ -247,11 +247,27 @@ mutation EditProject(
         image: $image,
         file: $file
   ) {
-    id
-    title
-    description
-    userIsAuthor
-
+    ... on Project{
+      id
+      title
+      description
+      expiration_date
+      location
+      lat
+      long
+      archived
+      needs{
+        id
+        title
+      }
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
   }
 }
 
@@ -269,14 +285,61 @@ mutation EditProject(
 }
 #-------------------------------------------------
 
-# delete project with specified ID & return message
+#OK Archive Project with specified Id
 # AUTHENTICATION REQUIRED via author profile
-# ==> return a payload object
+# ==> return the archived project object or an error object
+mutation ArchiveProject(
+        $id: ID!
+) {
+  archiveProject(
+        id: $id
+  ) {
+    ... on Project{
+      id
+      title
+      description
+      expiration_date
+      location
+      lat
+      long
+      archived
+      needs{
+        id
+        title
+      }
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
+  }
+}
+#query variables
+{
+	"id": 2
+}
+#-------------------------------------------------
+
+#OK Delete project with specified ID 
+# AUTHENTICATION REQUIRED via author profile
+# ==> return the deleted project object or an error object
 
 mutation deleteProject($id: ID!) {
-  deleteProject(id: $id){
-      infos
-      errors
+     ... on Project{
+        id
+        title
+        description
+
+      }
+      ... on Error{
+        error{
+          msg
+          code
+        }
+    
   }   
 }
 
@@ -328,77 +391,3 @@ query GetFavoritesByUserID ($id: ID!){
 }
 
 
-
-# archive project with specified ID & return archived project
-
-mutation archiveProject($id: ID!) {
-  archiveProject(id: $id) {
-    id
-    title
-    description
-    expiration_date
-    location
-    lat
-    long
-    scope
-    west
-    east
-    north
-    south
-    image
-    file
-    archived
-    author{
-      name
-      email
-    }
-    comments{
-      description
-      author{
-        name
-      }
-    }
-  }
-}
-
-
-#---------------------------NEEDS-----------------------------------------
-
-# 
-mutation completeNeed($id: ID!) {
-  completeNeed(id: $id) {
-    id
-    title
-    description
-    project_id
-    completed
-  }
-}
-
-#----------------------COMMENTS---------------------------------------
-
-# Create new comment & return message
-
-mutation createComment($description: String!, $project_id: ID!, $author: ID!) {
-  insertComment(description: $description, project_id: $project_id, author: $author) {
-    msg
-  }
-}
-
-
-# Update comment with specified ID & return message
-
-mutation updateComment($id: ID!, $description: String!) {
-  updateComment(id: $id, description: $description) {
-    msg
-  }
-}
-
-
-# Delete comment with specified ID & return message
-
-mutation deleteComment($id: ID!, $description: String!) {
-  deleteComment(id: $id, description: $description) {
-    msg
-  }
-}

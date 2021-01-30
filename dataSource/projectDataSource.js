@@ -77,49 +77,101 @@ class ProjectDataSource extends DataSource {
     }
 
     async insertProject(project, user) {
-        console.log(user)
-        const insertion = await this.client.query(
-            `INSERT INTO projects
-                (title, description, expiration_date, location, lat, long, image, file, author)
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
-             RETURNING *`,
-            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, user.id]
-             );
-        timestampConverter.toIso(insertion.rows);
-        await this.defineUserRelation(insertion.rows, user);
+        try{
+            const insertion = await this.client
+                .query(`
+                    INSERT INTO projects(
+                        title, 
+                        description, 
+                        expiration_date, 
+                        location, 
+                        lat, 
+                        long, 
+                        image, 
+                        file, 
+                        author)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+                    RETURNING *`,
+                    [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, user.id])
+                .catch(error => {throw {msg:error.stack,code:error.code}})
 
-        const createdProject = insertion.rows[0]
-        return createdProject;
-    };
+            timestampConverter.toIso(insertion.rows);
+
+            await this.defineUserRelation(insertion.rows, user);
+
+            return insertion.rows[0];
+        } catch (error){
+            return{error: error}
+        };
+    }
 
     async editProject(project, user) {
-        const projectToUpdade = await this.findProjectById(project.id);
-        if (!projectToUpdade)
-            throw "project to update not found";
+        try{
+            const projectToUpdade = await this.findProjectById(project.id);
+            if (!projectToUpdade)
+                throw {msg:"project to update not found", code:"whatever"};
 
-        if (projectToUpdade.author != user.id)
-            throw "Project edit not allowed with this user profile";
-        
-        const update = await this.client.query(`
-            UPDATE projects
-            SET 
-                title = $1, 
-                description = $2, 
-                expiration_date = $3, 
-                location = $4, 
-                lat = $5, 
-                long = $6, 
-                image = $7, 
-                file = $8
-            WHERE id = $9
-            RETURNING *`,
-            [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id]
-             );
-        timestampConverter.toIso(update.rows);
-        await this.defineUserRelation(update.rows, user);
+            if (projectToUpdade.author != user.id)
+                throw {msg:"User is not author, project editing not allowed", code: "whatever"};
+            
+            const update = await this.client
+                .query(`
+                    UPDATE projects
+                    SET 
+                        title = $1, 
+                        description = $2, 
+                        expiration_date = $3, 
+                        location = $4, 
+                        lat = $5, 
+                        long = $6, 
+                        image = $7, 
+                        file = $8
+                    WHERE id = $9
+                    RETURNING *`,
+                    [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id])
+                .catch(error => {throw {msg:error.stack,code:error.code}})
+            
+                timestampConverter.toIso(update.rows);
 
-        const updatedProject = update.rows[0]
-        return updatedProject;
+            await this.defineUserRelation(update.rows, user);
+            
+            const updatedProject = update.rows[0]
+
+            return updatedProject;    
+        } catch(error) {
+            return{error: error}
+        }
+    };
+
+    async archiveProject(project, user) {
+        try{
+            const projectToArchive = await this.findProjectById(project.id);
+            if (!projectToArchive)
+                throw {msg:"project to archive not found", code:"whatever"};
+
+            if (projectToArchive.author != user.id)
+                throw {msg:"User is not author, project archiving not allowed", code: "whatever"};
+            
+            const update = await this.client
+                .query(`
+                    UPDATE projects
+                    SET 
+                        archived = true
+                    WHERE id = $1
+                    RETURNING *`,
+                    [project.id])
+                .catch(error => {throw {msg:error.stack,code:error.code}})
+            
+                timestampConverter.toIso(update.rows);
+
+            await this.defineUserRelation(update.rows, user);
+            
+            const updatedProject = update.rows[0]
+
+            return updatedProject;    
+        } catch(error) {
+            return{error: error}
+        }
     };
 
     async deleteProject(projectId, user) {
@@ -131,15 +183,16 @@ class ProjectDataSource extends DataSource {
             if (project.author != user.id)
                 throw {msg: "Current user is not author, deletion not allowed", code:10};
             
-            const deletion = await this.client.query(`
+            const deletion = await this.client
+            .query(`
                 DELETE FROM projects
                 WHERE
                     id = $1
                 RETURNING *
                  `,
-                [projectId]
-                 );
-            console.log(deletion.rows[0]);
+                [projectId])
+            .catch(error => {throw {msg:error.stack,code:error.code}})
+
             return deletion.rows[0];
         } catch(error) {
             return{error: error}

@@ -92,8 +92,15 @@ module.exports = {
                 return{error:{msg: context.error, code: context.code}}
 
             return await context.dataSources.project.editProject(args, context.user);
-
         },
+
+        async archiveProject(_, args, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.project.archiveProject(args, context.user);
+        },
+    
     
 
         async deleteProject(_, args, context) {

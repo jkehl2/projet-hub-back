@@ -206,6 +206,8 @@ type Mutation {
         file: String,
     ): ProjectResult
 
+    archiveProject(id: ID!): ProjectResult
+
     deleteProject(id: ID!): ProjectResult
 
     insertNeeds(
