@@ -20,9 +20,15 @@ module.exports = {
             return await context.dataSources.user.findUserById(args.id);
         },
 
-        async login(_, args, context) {
-            return await context.dataSources.user.login(args);
+        async myInfos(_, __, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+            return await context.dataSources.user.findUserById(context.user.id);
         },
+
+        // async login(_, args, context) {
+        //     return await context.dataSources.user.login(args);
+        // },
 
         async need(_, args, context) {
             return await context.dataSources.need.findNeedById(args.id);
@@ -52,12 +58,6 @@ module.exports = {
             return await context.dataSources.user.editUserInfos(args, context.user);
         },
 
-        // async editUserAvatar(_, args, context) {
-        //     if (!context.user) 
-        //         throw "user edit requires authentification";
-        //     else
-        //         return await context.dataSources.user.editUserAvatar(args, context.user);
-        // },
 
         async editUserPassword(_, args, context) {
             if (!context.user) 
@@ -158,6 +158,20 @@ module.exports = {
 
             return await context.dataSources.need.uncompleteNeed(args, context.user);
         },
+
+        async insertFavorite(_, args, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.favorite.insertFavorite(args.projectId, context.user);
+        },
+
+        async deleteFavorite(_, args, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.favorite.deleteFavorite(args.projectId, context.user);
+        },
     },
 
     Project: {
@@ -200,7 +214,7 @@ module.exports = {
             const projectsIds = favorites.map(favorite => favorite['project_id'])
             const projects = [];
             for(const projectId of projectsIds){
-                projects.push(await context.dataSources.project.findProjectById(projectId))
+                projects.push(await context.dataSources.project.findProjectById(projectId, context.user))
             };
             return projects;
         }

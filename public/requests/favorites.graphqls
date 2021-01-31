@@ -1,0 +1,60 @@
+
+#-------------------FAVORITES------------------------------
+
+
+#OK create favorite for logged user on specified project id
+## requires auth
+# ==> return the new favorite object OR 1 error object
+
+mutation createFavorite($project_id: ID! ) {
+  insertFavorite(projectId: $project_id) {
+  __typename
+    ... on Favorite{
+      id
+      project{
+        title
+        isFollowed
+      }
+      
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
+  }
+}
+#query variables
+{
+	"project_id": "3"
+}
+#------------------------------------------------
+
+#OK delete favorite for logged user on specified project id
+## requires auth
+# ==> return the deleted favorite object OR 1 error object
+
+mutation deleteFavorite($project_id: ID! ) {
+  deleteFavorite(projectId: $project_id) {
+  __typename
+        ... on Favorite{
+      id
+      project{
+        title
+        isFollowed
+      }
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
+  }
+}
+#query variables
+{
+	"project_id": "3"
+}

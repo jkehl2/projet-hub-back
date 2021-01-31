@@ -8,13 +8,8 @@ class NeedDataSource extends DataSource {
         super();
     }
 
-    // Dans la DataSource on doit obligatoirement implémenter une méthode
-    // initialize qui sera appelé par notre serveur apollo pour faire de
-    // "l'injection de dépendance"
     initialize(config) {
-        // config contiendra 2 propriété
-        // - context qui servira à faire passer les dépendances
-        // - cache pour la gestion interne
+
         this.context = config.context;
         this.client = config.context.sqlClient;
     }
@@ -36,15 +31,15 @@ class NeedDataSource extends DataSource {
     // }
 
     async findFavoritesByUserId(userId) {
-        const cacheKey = "favoritesByUser"+ userId.toString();
-        return cache.wrapper(cacheKey,async () => {
+        // const cacheKey = "favoritesByUser"+ userId.toString();
+        // return cache.wrapper(cacheKey,async () => {
             const result = await this.client.query(
                 'SELECT * FROM favorites WHERE user_id = $1',
                 [userId]);
             const favorites = result.rows;
 
             return favorites;
-        });
+        // });
     }
 
     async findFavoritesByProjectId(projectId) {
@@ -60,38 +55,66 @@ class NeedDataSource extends DataSource {
         });
     }
 
-    async findProjectById(projectId) {
-        const cacheKey = "project"+ projectId.toString();
-        return cache.wrapper(cacheKey,async () => {
-            await this.projectLoader.clear(projectId)
-            return await this.projectLoader.load(projectId);
-        });
-    }
+    // async findProjectById(projectId) {
+    //     const cacheKey = "project"+ projectId.toString();
+    //     return cache.wrapper(cacheKey,async () => {
+    //         await this.projectLoader.clear(projectId)
+    //         return await this.projectLoader.load(projectId);
+    //     });
+    // }
 
     async insertFavorite(projectId, user) {
-        const newFavorite = await this.client.query(
-            `INSERT INTO favorites
-                (user_id, project_id)
-             VALUES ($1, $2) 
-             RETURNING *`,
-            [user.id, projectId]
-             );
-        return newFavorite.rows[0];
+        try{
+            if(await this.checkIfFavorite(projectId, user))
+                throw {msg:"Favorite already exists",code:"whatever"}
+            
+            const newFavorite = await this.client
+                .query(`
+                    INSERT INTO favorites
+                        (user_id, project_id)
+                    VALUES ($1, $2) 
+                    RETURNING *`,
+                    [user.id, projectId])
+                .catch(error => {throw {msg:error.stack,code:error.code}})
+            return newFavorite.rows[0];
+        } catch (error){
+            return{error: error}
+        };
+
     }
 
     async deleteFavorite(projectId, user) {
-
-        const deletion = await this.client.query(`
-            DELETE FROM favorites
-            WHERE user_id = $1
-            AND project_id = $2
-            RETURNING 'Deletion completed'
-            `,
-            [user.id, projectId]
-             );
-        return {infos: deletion.rows[0]['?column?']};
+        try{
+            if(!await this.checkIfFavorite(projectId, user))
+                throw {msg:"Favorite does not exist",code:"whatever"}
+            const deletion = await this.client
+                .query(`
+                    DELETE FROM favorites
+                    WHERE user_id = $1
+                    AND project_id = $2
+                    RETURNING *`,
+                    [user.id, parseInt(projectId,10)])
+                .catch(error => {throw {msg:error.stack,code:error.code}})
+                return deletion.rows[0];
+        } catch (error){
+            return{error: error}
+        };
 
     };
+
+    async checkIfFavorite(projectId, user) {
+        try{
+            const favorites = await this.findFavoritesByUserId(user.id)
+            const isPresent = favorites.find(favorite => favorite.project_id == projectId)
+            if (isPresent)
+                return true;
+            else
+                return false;
+
+        } catch (error){
+            return{error: error}
+        };
+    }
 
 
 
@@ -108,7 +131,7 @@ class NeedDataSource extends DataSource {
             // les categories correspondantes histoire d'assurer l'ordre
             return result.rows.find( favorite => favorite.id == id);
         });
-        console.log(data)
+  
 
         return data;
     });

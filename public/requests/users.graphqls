@@ -1,6 +1,41 @@
 
 #-------------------USERS------------------------------
 
+#OK Return all current user datas
+# ==> return one user object or an error object
+{
+  myInfos{
+    ... on User{
+      id
+      created_at
+      name
+      email
+      avatar
+      activated
+      projectsCreated{
+        id
+        title
+        isFollowed
+        userIsAuthor
+      }
+      projectsFollowed{
+        id
+        title
+        isFollowed
+        userIsAuthor
+      }
+    }
+      ... on Error{
+      error{
+        msg
+        code
+      }
+    }
+  }
+}
+# no query variables
+
+#------------------------------------------------
 
 #OK Return all user data related to one given user id
 # ==> return 1 user object

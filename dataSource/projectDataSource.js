@@ -25,6 +25,7 @@ class ProjectDataSource extends DataSource {
     }
 
     async findProjectById(projectId, user) {
+        console.log("project by ID search")
         const cacheKey = "projectById"+ projectId.toString();
         const project = await cache.wrapper(cacheKey,async () => {
             await this.projectLoader.clear(projectId)
@@ -32,7 +33,6 @@ class ProjectDataSource extends DataSource {
         });
 
         await this.defineUserRelation([project], user);
-
         return project;
     }
 
@@ -224,7 +224,6 @@ class ProjectDataSource extends DataSource {
         const data = ids.map(id => {
                return result.rows.filter( project => project.author == id);
         });
-        console.log(data[0])
         timestampConverter.toIso(data[0]);
 
       return data;
@@ -233,9 +232,11 @@ class ProjectDataSource extends DataSource {
     async defineUserRelation(projects, user){
         if(projects[0]!== undefined){
             if (user !== undefined){
+                console.log(`checking relations for user ${user.id}`)
                 const favorites = await this.findFavoritesByUserId(user.id);
                 const projectsIds = favorites.map(favorite => favorite.project_id)
                 projects.forEach(project => {
+
                     if (projectsIds.includes(project.id)){
                         project.isFollowed = true;
                     } else {
@@ -256,15 +257,15 @@ class ProjectDataSource extends DataSource {
         }
     };
     async findFavoritesByUserId(userId) {
-        const cacheKey = "favoritesByUser"+ userId.toString();
-        return cache.wrapper(cacheKey,async () => {
+        // const cacheKey = "favoritesByUser"+ userId.toString();
+        // return cache.wrapper(cacheKey,async () => {
             const result = await this.client.query(
                 'SELECT * FROM favorites WHERE user_id = $1',
                 [userId]);
             const favorites = result.rows;
 
             return favorites;
-        });
+        // });
     }
 
 }
