@@ -3,7 +3,8 @@ const router = express.Router();
 const client = require('./dataSource/client');
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
-const storeFile = require('./dataSource/storeFile')
+const storeFile = require('./dataSource/storeFile');
+const seeder = require('./dataSource/seeder')
 
 
 /** Gestion des utilisateurs */
@@ -11,6 +12,19 @@ const storeFile = require('./dataSource/storeFile')
 router.get('/',async (req, res) => {
     res.sendFile('index.html');
 })
+
+router.get('/seeder/user/:nb',async (req, res) => {
+    const nb = req.params.nb;
+    const accountsCreated = await seeder.user(nb);
+    res.json(accountsCreated);
+})
+
+router.get('/seeder/project/:nb',async (req, res) => {
+    const nb = req.params.nb;
+    const projectsCreated = await seeder.project(nb);
+    res.json(projectsCreated);
+})
+
 
 
 router.post('/login',async (req, res) => {
