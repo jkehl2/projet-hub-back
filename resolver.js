@@ -78,11 +78,7 @@ module.exports = {
                 return{error:{msg: context.error, code: context.code}}
 
             const newProject = await context.dataSources.project.insertProject(args, context.user);
-            for(const need of args.needs){
-                need.project_id = newProject.id;
-                newProject.needs =[];
-                newProject.needs.push(await context.dataSources.need.insertNeed(need, context.user))
-            }
+            
             return newProject;
 
         },
