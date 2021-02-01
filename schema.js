@@ -203,6 +203,14 @@ type Mutation {
         needs: [NeedInput]
     ): [NeedResult]
 
+    insertNeed(
+        title: String!
+
+        description: String!
+
+        project_id: ID!
+    ): NeedResult
+
     editNeed(
         id: ID!,
         title: String!,

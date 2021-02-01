@@ -119,6 +119,15 @@ module.exports = {
             
         },
 
+        async insertNeed(_, args, context) {
+            if (!context.user) 
+                return{error:{msg: context.error, code: context.code}}
+
+            return await context.dataSources.need.insertNeed(args, context.user)
+            
+            
+        },
+
         async editNeed(_, args, context) {
             if (!context.user) 
                 return{error:{msg: context.error, code: context.code}}

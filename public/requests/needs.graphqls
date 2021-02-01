@@ -1,20 +1,58 @@
 
 #-------------------NEEDS------------------------------
 
+# Create 1 need for specified project id
+# AUTH REQUIRED via related project author
+# ==> return the created need object or an error object
+
+mutation createNeed($title: String!, $description: String!, $project_id: ID!) {
+  insertNeed(title: $title, description: $description, project_id: $project_id) {
+   __typename
+    ... on Need{
+      id
+      title
+      description
+      completed
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
+  }
+}
+#query variables
+{
+	"project_id": 1,
+	"title": "new need",
+	"description": "new need description"
+}
+
+#------------------------------------------------
+
 # Create multiple needs given in a array for specified project id
 # AUTH REQUIRED via related project author
-# ==> return an array of created needs
+# ==> return an array of created needs or an array of errors
+
+
+
 
 mutation createNeeds($needs: [NeedInput]) {
   insertNeeds(needs: $needs) {
-    id
-    title
-    project{
+   __typename
+    ... on Need{
       id
       title
-      author{
-        id
-        name
+      description
+      completed
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
       }
     }
   }
@@ -40,15 +78,24 @@ mutation createNeeds($needs: [NeedInput]) {
 
 # edit need specified by is ID
 # AUTH REQUIRED via related project author
-# ==> return the updated need
+# ==> return the updated need or an error object
+
 
 mutation editNeed($title: String!, $description: String!, $id: ID! ) {
   editNeed(title: $title, description: $description, id: $id) {
-    id
-    title
-    description
-    project{
+      __typename
+    ... on Need{
+      id
       title
+      description
+      completed
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
     }
   }
 }
@@ -63,12 +110,22 @@ mutation editNeed($title: String!, $description: String!, $id: ID! ) {
 
 # edit need specified by is ID
 # AUTH REQUIRED via related project author
-# ==> return a payload object
+# ==> return the deleted need or an error object
 
 mutation deleteNeed($id: ID!) {
   deleteNeed(id: $id){
-      infos
-      errors
+      __typename
+    ... on Need{
+      id
+      title
+      
+    }
+    ... on Error{
+      error{
+        msg
+        code
+      }
+    }
   }   
 }
 
