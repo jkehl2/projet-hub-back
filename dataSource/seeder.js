@@ -41,7 +41,7 @@ module.exports = {
         }
     },
 
-    async project(place, nb){
+    async project(userId, place, nb){
         try{
             let projectsCreated = []
             const geo = await this.convertToGeo(place);
@@ -56,7 +56,7 @@ module.exports = {
                 const long = parseFloat(coordinates[1]);
                 const location = await this.convertToAddress(lat, long);
                 console.log(location);
-                const author = 1;
+                const author = userId;
 
 
                 const projectInsertion = await client
