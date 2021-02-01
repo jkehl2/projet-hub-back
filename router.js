@@ -19,9 +19,10 @@ router.get('/seeder/user/:nb',async (req, res) => {
     res.json(accountsCreated);
 })
 
-router.get('/seeder/project/:nb',async (req, res) => {
+router.get('/seeder/project/:place/:nb',async (req, res) => {
     const nb = req.params.nb;
-    const projectsCreated = await seeder.project(nb);
+    const place = req.params.place;
+    const projectsCreated = await seeder.project(place, nb);
     res.json(projectsCreated);
 })
 
