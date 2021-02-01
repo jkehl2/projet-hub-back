@@ -50,7 +50,7 @@ module.exports = {
                 const title = faker.lorem.words(4);
                 const description = faker.lorem.paragraph();
                 const expiration_date = faker.date.between('2020-10-01', '2024-01-05')
-                const coordinates = faker.address.nearbyGPSCoordinate([geo.lat, geo.long], 10)
+                const coordinates = faker.address.nearbyGPSCoordinate([geo.lat, geo.long], 15)
 
                 const lat = parseFloat(coordinates[0]);
                 const long = parseFloat(coordinates[1]);
