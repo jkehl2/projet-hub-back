@@ -61,10 +61,13 @@ module.exports = {
     async wrapper(key,callback){
 
         // activate / deactivate wrapper
-        if (true === false)
+        if (true === true){
+            console.log("Cache disabled")
             return callback();
-        // -------------------------------
 
+        }
+        // -------------------------------
+        console.log("Cache enabled")
         const cached = await this.read(key);
         const valueAlreadyInCache = await this.has(key);
         if (!valueAlreadyInCache){
