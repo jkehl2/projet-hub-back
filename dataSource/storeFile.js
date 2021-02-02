@@ -2,23 +2,27 @@ const client = require('./client');
 
 
 module.exports = {
-    async dbUpdate(type, fileName, userId){
-        console.log(type, fileName, userId)
+    async dbUpdateAvatar(fileName, userId){
 
         const fileExtention = fileName.substr(fileName.indexOf("."));
-        if(type === 'avatar')
-            return await this.updateAvatar(fileExtention , userId);
+
+        return await this.updateAvatar(fileExtention , userId);
+
+    },
+
+    async dbUpdate(type, fileName, userId, projectId){
+
+
+        const fileExtention = fileName.substr(fileName.indexOf("."));
 
         if(type === 'image')
-            return await this.updateImage(fileExtention , userId);
+            return await this.updateImage(fileExtention , userId, projectId);
 
         if(type === 'file')
-            return await this.updateFile(fileExtention , userId);
+            return await this.updateFile(fileExtention , userId, projectId);
 
         else
             return 'upload type unknown'
-
-
     },
 
     async updateAvatar(fileExtention , userId){
@@ -37,14 +41,14 @@ module.exports = {
         }
     },
 
-    async updateImage(fileExtention , userId){
+    async updateImage(fileExtention , userId, projectId){
         try{
             const update = await client.query(`
             UPDATE projects
             SET 
                 image = '/project-images/'||uuid_generate_v1()||$1
             WHERE id = $2
-            RETURNING image`,[fileExtention , userId]
+            RETURNING image`,[fileExtention , projectId]
             ).catch(error => console.error(error));
 
             return update.rows[0].image
@@ -53,14 +57,14 @@ module.exports = {
         }
     },
 
-    async updateFile(fileExtention , userId){
+    async updateFile(fileExtention , userId, projectId){
         try{
             const update = await client.query(`
             UPDATE projects
             SET 
                 file = '/project-files/'||uuid_generate_v1()||$1
             WHERE id = $2
-            RETURNING file`,[fileExtention , userId]
+            RETURNING file`,[fileExtention , projectId]
             ).catch(error => console.error(error));
 
             return update.rows[0].file

@@ -174,10 +174,11 @@ router.post('/upload-file', async (req, res) => {
         const user = await jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
 
         let file = req.files.file;
+        let projectId = req.body.project_id;
 
         console.log(`uploading file "${file.name}"`);
          
-        const filePath = await storeFile.dbUpdate('file', file.name, user.id)
+        const filePath = await storeFile.dbUpdate('file', file.name, user.id, projectId)
 
         //Use the mv() method to place the file in upload directory (i.e. "uploads")
         file.mv('./public' + filePath);
