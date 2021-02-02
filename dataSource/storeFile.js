@@ -2,19 +2,32 @@ const client = require('./client');
 
 
 module.exports = {
-    async dbUpdate(type, column, dirName, fileName, id){
-        console.log(type, column, dirName, fileName, id)
+    async dbUpdate(type, fileName, userId){
+        console.log(type, fileName, userId)
 
         const fileExtention = fileName.substr(fileName.indexOf("."));
+        if(type === 'avatar')
+            return await this.updateAvatar(fileExtention , userId);
+
+        if(type === 'image')
+            return await this.updateAvatar(fileExtention , userId);
+
+
+    },
+
+    async updateAvatar(fileExtention , userId){
+        try{
         const update = await client.query(`
-            UPDATE users
-            SET 
-                avatar = '/'||$1||'/'||uuid_generate_v1()||$2
-            WHERE id = $3
-            RETURNING avatar`,[dirName, fileExtention , id]
+        UPDATE users
+        SET 
+            avatar = '/avatars/'||uuid_generate_v1()||$1
+        WHERE id = $2
+        RETURNING avatar`,[fileExtention , userId]
         ).catch(error => console.error(error));
-        console.log(update.rows)
-        const filePath = update.rows[0].avatar;
-        return filePath
-    }
+
+        return update.rows[0].avatar
+        } catch(error){
+            throw error
+        }
+    },
 }

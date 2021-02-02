@@ -22,11 +22,11 @@ const jwt = require('jsonwebtoken');
 cache.flushAll();
 
 const corsOptions = {
-    origin: 'https://madly-elbow.surge.sh',
+    origin: '*',
     credentials: true
 }
 app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://madly-elbow.surge.sh');
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
     res.setHeader("Access-Control-Allow-Headers", "Referer, Origin, X-Requested-With, Content-Type,Accept, x-client-key, x-client-token, x-client-secret, Authorization, Cookie");
     res.setHeader('Access-Control-Allow-Credentials', true);
