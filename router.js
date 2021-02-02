@@ -134,28 +134,69 @@ router.post('/upload-image', async (req, res) => {
 
         console.log(`uploading file "${image.name}"`);
          
-        const filePath = await storeFile.dbUpdate('users', 'avatar', 'avatars', image.name, user.id)
+        const filePath = await storeFile.dbUpdate('image', image.name, user.id)
 
-            //Use the mv() method to place the file in upload directory (i.e. "uploads")
-            image.mv('./public' + filePath);
+        //Use the mv() method to place the file in upload directory (i.e. "uploads")
+        image.mv('./public' + filePath);
 
-            //send response
-            res.json({
-                status: true,
-                message: 'File is uploaded',
-                data: {
-                    path: filePath,
-                    mimetype: image.mimetype,
-                    size: image.size
-                }
-            });
+        //send response
+        res.json({
+            status: true,
+            message: 'File is uploaded',
+            data: {
+                path: filePath,
+                mimetype: image.mimetype,
+                size: image.size
+            }
+        });
         
     } catch (err) {
         res.status(500).json(err);
     }
 });
 
+router.post('/upload-file', async (req, res) => {
+    try {
+        if(!req.files) 
+            res.json({
+                status: false,
+                message: 'No file uploaded'
+            });
 
+        const authHeader = req.headers.authorization    
+        if (!authHeader) 
+            throw "identification error"
+
+        const token = authHeader.split(' ')[1];
+
+        const accessTokenSecret = 'youraccesstokensecret';
+
+        const user = await jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
+
+        let file = req.files.file;
+
+        console.log(`uploading file "${file.name}"`);
+         
+        const filePath = await storeFile.dbUpdate('file', file.name, user.id)
+
+        //Use the mv() method to place the file in upload directory (i.e. "uploads")
+        file.mv('./public' + filePath);
+
+        //send response
+        res.json({
+            status: true,
+            message: 'File is uploaded',
+            data: {
+                path: filePath,
+                mimetype: file.mimetype,
+                size: file.size
+            }
+        });
+        
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
 
 
 
