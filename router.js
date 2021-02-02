@@ -6,7 +6,9 @@ const jwt = require('jsonwebtoken');
 const storeFile = require('./dataSource/storeFile');
 const seeder = require('./dataSource/seeder')
 
-
+const accessTokenSecret = 'youraccesstokensecret';
+const refreshTokenSecret = 'yourrefreshtokensecrethere';
+const refreshTokens = [];
 /** Gestion des utilisateurs */
 
 router.get('/',async (req, res) => {
@@ -55,7 +57,6 @@ router.post('/login',async (req, res) => {
             throw "wrong password or email";
         console.log("user found");
         const user = result.rows[0];
-        const accessTokenSecret = 'youraccesstokensecret';
         const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 100000});
         res.json({
             token,
@@ -67,6 +68,72 @@ router.post('/login',async (req, res) => {
 });
 
 
+router.post('/login-refresh',async (req, res) => {
+    // Read username and password from request body
+    const { email, password } = req.body;
+    try{
+        if (!email)
+            throw "email/password was not provided";
+
+        const result = await client.query(`
+            SELECT 
+                id,
+                created_at,
+                name,
+                email,
+                avatar 
+            FROM users 
+            WHERE
+                email = $1
+            AND 
+                password = crypt($2, password)
+                `,
+            [email, password]);
+
+        if (result.rowCount < 1)
+            throw "wrong password or email";
+        console.log("user found");
+        const user = result.rows[0];
+        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 100000});
+///////////////////////////////////////
+
+        const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret);
+        refreshTokens.push(refreshToken);
+        console.log(token)
+        res.json({
+            token,
+            refreshToken,
+            user
+        });
+    } catch(error) {
+        res.json({"error": error})
+    }
+});
+
+
+router.post('/token', (req, res) => {
+    const { token } = req.body;
+
+    if (!token) {
+        return res.json({error:'no token'});
+    }
+
+    // if (!refreshTokens.includes(token)) {
+    //     return res.sendStatus(403);
+    // }
+
+    jwt.verify(token, refreshTokenSecret, (err, user) => {
+        if (err) {
+            return res.json({error:'refresh token invalid'});
+        }
+
+        const accessToken = jwt.sign({ username: user.username, role: user.role }, accessTokenSecret, { expiresIn: '20m' });
+
+        res.json({
+            accessToken
+        });
+    });
+});
 
 router.post('/upload-avatar', async (req, res) => {
     try {
