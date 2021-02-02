@@ -46,6 +46,7 @@ module.exports = {
             let projectsCreated = []
             const geo = await this.convertToGeo(place);
             console.log(geo)
+            nb = nb > 3? 3 : nb;
             for(let i = 0; i < nb; i++) {
                 const title = faker.lorem.words(4);
                 const description = faker.lorem.paragraph();
@@ -55,7 +56,6 @@ module.exports = {
                 const lat = parseFloat(coordinates[0]);
                 const long = parseFloat(coordinates[1]);
                 const location = await this.convertToAddress(lat, long);
-                console.log(location);
                 const author = userId;
 
 

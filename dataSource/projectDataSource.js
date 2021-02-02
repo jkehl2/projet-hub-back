@@ -19,7 +19,7 @@ class ProjectDataSource extends DataSource {
         const data = await this.client.query('SELECT * FROM projects');
         timestampConverter.toIso(data.rows);
 
-        await this.defineUserRelation(data.rows, user);
+        await this.defineUserRelations(data.rows, user);
 
         return data.rows;
     }
@@ -32,7 +32,7 @@ class ProjectDataSource extends DataSource {
             return await this.projectLoader.load(projectId);
         });
 
-        await this.defineUserRelation([project], user);
+        await this.defineUserRelations([project], user);
         return project;
     }
 
@@ -60,7 +60,10 @@ class ProjectDataSource extends DataSource {
             timestampConverter.toIso(data.rows);
             return data.rows
         })
-        await this.defineUserRelation(results, user);
+        this.defineDistance(results, lat, long);
+
+
+        await this.defineUserRelations(results, user);
         return results;
     }
 
@@ -71,7 +74,9 @@ class ProjectDataSource extends DataSource {
             return await this.projectsByAuthorLoader.load(authorId);
         });
 
-        await this.defineUserRelation(results, user);
+        await this.defineUserRelations(results, user);
+
+        
 
         return results;
     }
@@ -97,7 +102,8 @@ class ProjectDataSource extends DataSource {
 
             timestampConverter.toIso(insertion.rows);
 
-            await this.defineUserRelation(insertion.rows, user);
+            await this.defineUserRelations(insertion.rows, user);
+
 
             return insertion.rows[0];
         } catch (error){
@@ -133,7 +139,7 @@ class ProjectDataSource extends DataSource {
             
                 timestampConverter.toIso(update.rows);
 
-            await this.defineUserRelation(update.rows, user);
+            await this.defineUserRelations(update.rows, user);
             
             const updatedProject = update.rows[0]
 
@@ -164,7 +170,7 @@ class ProjectDataSource extends DataSource {
             
                 timestampConverter.toIso(update.rows);
 
-            await this.defineUserRelation(update.rows, user);
+            await this.defineUserRelations(update.rows, user);
             
             const updatedProject = update.rows[0]
 
@@ -229,7 +235,7 @@ class ProjectDataSource extends DataSource {
       return data;
     });
 
-    async defineUserRelation(projects, user){
+    async defineUserRelations(projects, user){
         if(projects[0]!== undefined){
             if (user !== undefined){
                 console.log(`checking relations for user ${user.id}`)
@@ -256,6 +262,25 @@ class ProjectDataSource extends DataSource {
             }
         }
     };
+
+    async defineDistance(projects, lat, long){
+        if(projects[0]!== undefined){
+
+                console.log(`calculating project distance`)
+                projects.forEach(project => {
+                    console.log(project.lat)
+                    console.log(lat)
+
+                    const latGap = Math.abs(parseFloat(project.lat) - parseFloat(lat))
+                    const longGap = Math.abs(parseFloat(project.long) - parseFloat(long))
+                    project.distance = latGap + longGap
+
+                });
+
+        }
+    };
+
+
     async findFavoritesByUserId(userId) {
         // const cacheKey = "favoritesByUser"+ userId.toString();
         // return cache.wrapper(cacheKey,async () => {

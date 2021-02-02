@@ -50,6 +50,8 @@ type Project {
 
     userIsAuthor: Boolean
 
+    distance: Float
+
 }
 
 type User {

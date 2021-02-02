@@ -131,6 +131,7 @@ query GetProjectsByGeo($lat: Float!, $long: Float!, $scope: Float!, $archived: B
     long
     isFollowed
     userIsAuthor
+    distance
     author{
       name
       email
