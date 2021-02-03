@@ -257,13 +257,19 @@ class ProjectDataSource extends DataSource {
 
                 });
             } else {
+                console.log(`user not found`)
+
                 projects.forEach(project => {
                     project.isFollowed = false;
                     project.userIsAuthor = false;
                 })
             }
 
+
+        } else {
+            console.log("project not found")
         }
+
     };
 
     async defineDistance(projects, lat, long){
