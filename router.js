@@ -128,7 +128,7 @@ router.post('/token', (req, res) => {
             return res.json({error:'refresh token invalid'});
         }
 
-        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: '20m' });
+        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: 2 });
         console.log("sending token")
         console.log(token)
         res.status(201).json({
