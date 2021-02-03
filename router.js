@@ -129,7 +129,7 @@ router.post('/token', (req, res) => {
         }
 
         const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: '20m' });
-        console.log("refreshing token")
+        console.log("sending token")
         console.log(token)
         res.status(201).json({
             token
