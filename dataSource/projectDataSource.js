@@ -253,6 +253,8 @@ class ProjectDataSource extends DataSource {
                     } else {
                         project.userIsAuthor = false;
                     }
+                    console.log(`author: ${project.author},user: ${user.id}, userIsAuthor ${project.userIsAuthor}`)
+
                 });
             } else {
                 projects.forEach(project => {
@@ -260,6 +262,7 @@ class ProjectDataSource extends DataSource {
                     project.userIsAuthor = false;
                 })
             }
+
         }
     };
 
@@ -268,9 +271,6 @@ class ProjectDataSource extends DataSource {
 
                 console.log(`calculating project distance`)
                 projects.forEach(project => {
-                    console.log(project.lat)
-                    console.log(lat)
-
                     const latGap = Math.abs(parseFloat(project.lat) - parseFloat(lat))
                     const longGap = Math.abs(parseFloat(project.long) - parseFloat(long))
                     project.distance = latGap + longGap
