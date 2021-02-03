@@ -20,11 +20,17 @@ class CommentDataSource extends DataSource {
         this.client = config.context.sqlClient;
     }
 
+    
+
+
     async findAllComments() {
         const result = await this.client.query('SELECT * FROM comments');
         return result.rows;
     }
-
+    /**
+     * 
+     * @param {*} commentId 
+     */
     async findCommentsById(commentId) {
         await this.commentLoader.clear(commentId)
         console.log(`-- Adding ${commentId} to need dataloader`);

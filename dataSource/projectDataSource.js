@@ -134,7 +134,9 @@ class ProjectDataSource extends DataSource {
                         file = $8
                     WHERE id = $9
                     RETURNING *`,
-                    [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id])
+                    [
+                        project.title, 
+                        project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id])
                 .catch(error => {throw {msg:error.stack,code:error.code}})
             
                 timestampConverter.toIso(update.rows);
@@ -281,7 +283,12 @@ class ProjectDataSource extends DataSource {
             throw error
         }
     };
-
+    /**
+     * define distance 
+     * @param {*} projects project object sqdqsd
+     * @param {*} lat 
+     * @param {*} long 
+     */
     async defineDistance(projects, lat, long){
         if(projects[0]!== undefined){
 
