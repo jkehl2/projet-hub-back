@@ -8,12 +8,9 @@ const dataSources = require('./dataSource');
 const cache = require('./dataSource/cache');
 const router = require('./router');
 const bodyparser = require('body-parser');
-const session = require('express-session');
 const fileUpload = require('express-fileupload');
-const connectRedis = require('connect-redis');
 const app = express();
-const redis = require('redis');
-const cors = require('cors');
+const checkTokenExpiration = require('./middlewares/checkTokenExpiration')
 const morgan = require('morgan');
 const jwt = require('jsonwebtoken');
 
@@ -38,51 +35,25 @@ app.use(express.static('public'))
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended: true}));
-const RedisStore = connectRedis(session);
-const redisClient = redis.createClient(process.env.REDIS_URL)
 
-redisClient.on('error', function (err) {
-    console.log('Could not establish a connection with redis. ' + err);
-});
-redisClient.on('connect', function (err) {
-    console.log('Connected to redis successfully');
-});
 
 app.use(morgan('dev'));
+
 app.use(fileUpload({
     createParentPath: true
 }));
 
 
-const accessTokenSecret = 'youraccesstokensecret';
 
 
 
 
 app.use(router);
-// On va venir "créer" notre serveur GraphQL (comme on créérais un router ou l'app express)
-router.all('*', checkExpiration);
 
-function checkExpiration(req, res, next) {
+app.use(checkTokenExpiration);
 
-    console.log("checking token expiration")
-    try {
-        const authHeader = req.headers.authorization;
-        if (authHeader) {
-            const token = authHeader.split(' ')[1];
-            jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
-        }
 
-    } catch (error){
-        if(error.name === "TokenExpiredError"){
-            res.json({error:{msg:"session expired", code:1}})
-            return
-        }
-    } finally {
-        next();
-    }
 
-}
 
 
 const graphQLServer = new ApolloServer({
@@ -100,38 +71,30 @@ const graphQLServer = new ApolloServer({
         // via leur méthode initialze (pour faire l'injection de dépendances)
         const authHeader = req.headers.authorization;
         let user = null;
-
         if (authHeader) {
+            
             const token = authHeader.split(' ')[1];
+
             let result = null;
             try{
-                result = jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
-                console.log('user found')
-                console.log(result);
+                result = jwt.verify(token, process.env.TEMPORARYTOKENSECRET,{ignoreExpiration: false});
+                console.log('user identified')
                 user = result;
-
+                return {
+                    sqlClient: client,
+                    user: user
+                };
 
             } catch (error){
 
-                switch(error.name){
-                    case "TokenExpiredError":{
-                        console.log("Session expired");
-                        // throw new Error("Could not connect to age service");
-                        return {
-                            sqlClient: client,
-                            error: error.name, 
-                            code: 1
-                        };
-                    }
-                    default:{
-                        console.log(error.message);
-                        return {
-                            sqlClient: client,
-                            error: error.name, 
-                            code: 9
-                        };
-                    }
-                }
+                return {
+                    sqlClient: client,
+                    error: error.name, 
+                    code: 9
+                };
+                    
+
+                
             } 
         } else {
             return {
@@ -140,10 +103,7 @@ const graphQLServer = new ApolloServer({
                 code: 9
             };
         }
-        return {
-            sqlClient: client,
-            user: user
-        };
+
 
 
     },

@@ -108,17 +108,6 @@ module.exports = {
         
         },
 
-        async insertNeeds(_, args, context) {
-            if (!context.user) 
-                return{error:{msg: context.error, code: context.code}}
-            
-            const needsCreated =[];
-            for(const need of args.needs){
-                needsCreated.push(await context.dataSources.need.insertNeed(need, context.user))
-            }
-            return needsCreated
-            
-        },
 
         async insertNeed(_, args, context) {
             if (!context.user) 

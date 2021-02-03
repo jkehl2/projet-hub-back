@@ -9,7 +9,7 @@ const seeder = require('./dataSource/seeder')
 const accessTokenSecret = 'youraccesstokensecret';
 const refreshTokenSecret = 'yourrefreshtokensecrethere';
 let refreshTokens = [];
-const tokenDuration = 5;
+const temporaryTokenDuration = 180;
 /** Gestion des utilisateurs */
 
 
@@ -33,42 +33,6 @@ router.get('/seeder/project/:userId/:place/:nb',async (req, res) => {
 })
 
 
-
-router.post('/login',async (req, res) => {
-    // Read username and password from request body
-    const { email, password } = req.body;
-    try{
-        if (!email)
-            throw "email/password was not provided";
-
-        const result = await client.query(`
-            SELECT 
-                id,
-                created_at,
-                name,
-                email,
-                avatar 
-            FROM users 
-            WHERE
-                email = $1
-            AND 
-                password = crypt($2, password)
-                `,
-            [email, password]);
-
-        if (result.rowCount < 1)
-            throw "wrong password or email";
-        console.log("user found");
-        const user = result.rows[0];
-        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 100000});
-        res.json({
-            token,
-            user
-        });
-    } catch(error) {
-        res.json({"error": error})
-    }
-});
 
 
 router.post('/login-refresh',async (req, res) => {
@@ -97,7 +61,8 @@ router.post('/login-refresh',async (req, res) => {
             throw "wrong password or email";
         console.log("user found");
         const user = result.rows[0];
-        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: tokenDuration});
+        console.log(process.env.TEMPORARYTOKENSECRET);
+        const token = jwt.sign({id: user.id}, process.env.TEMPORARYTOKENSECRET, {expiresIn: temporaryTokenDuration});
 ///////////////////////////////////////
 
         const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret);
@@ -131,7 +96,7 @@ router.post('/token', (req, res) => {
             return res.json({error:'refresh token invalid'});
         }
 
-        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: tokenDuration });
+        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: temporaryTokenDuration });
         console.log("sending token")
         console.log(token)
         res.status(201).json({
