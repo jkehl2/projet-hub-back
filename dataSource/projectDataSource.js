@@ -60,9 +60,8 @@ class ProjectDataSource extends DataSource {
             timestampConverter.toIso(data.rows);
             return data.rows
         })
+        
         this.defineDistance(results, lat, long);
-
-
         await this.defineUserRelations(results, user);
         return results;
     }

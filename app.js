@@ -80,7 +80,7 @@ const graphQLServer = new ApolloServer({
             let result = null;
             try{
                 result = jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
-                console.log('')
+                console.log('user found')
                 console.log(result);
                 user = result;
 
