@@ -57,7 +57,7 @@ router.post('/login',async (req, res) => {
             throw "wrong password or email";
         console.log("user found");
         const user = result.rows[0];
-        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 10});
+        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 100000});
         res.json({
             token,
             user
@@ -94,7 +94,7 @@ router.post('/login-refresh',async (req, res) => {
             throw "wrong password or email";
         console.log("user found");
         const user = result.rows[0];
-        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 100000});
+        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 2});
 ///////////////////////////////////////
 
         const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret);
@@ -119,9 +119,9 @@ router.post('/token', (req, res) => {
         return res.json({error:'no refresh token'});
     }
 
-    // if (!refreshTokens.includes(token)) {
-    //     return res.sendStatus(403);
-    // }
+    if (!refreshTokens.includes(token)) {
+        return res.sendStatus(403);
+    }
 
     jwt.verify(refreshToken, refreshTokenSecret, (err, user) => {
         if (err) {
