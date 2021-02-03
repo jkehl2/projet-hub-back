@@ -9,7 +9,7 @@ const seeder = require('./dataSource/seeder')
 const accessTokenSecret = 'youraccesstokensecret';
 const refreshTokenSecret = 'yourrefreshtokensecrethere';
 let refreshTokens = [];
-const tokenDuration = 200;
+const tokenDuration = 5;
 /** Gestion des utilisateurs */
 
 router.get('/',async (req, res) => {

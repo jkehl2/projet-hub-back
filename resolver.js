@@ -13,6 +13,7 @@ module.exports = {
         },
 
         async projectsByGeo(_, args, context) {
+
             return await context.dataSources.project.findProjectsByGeo(args.lat,args.long, args.scope, args.archived, context.user);
         },
 

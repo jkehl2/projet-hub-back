@@ -66,7 +66,7 @@ const graphQLServer = new ApolloServer({
     resolvers: resolver,
     formatError: (err) => {
         //const error = getErrorCode(err.Message)
-        return { message: err.message, id: 400 }
+        return { message: err.message, code: 1 }
     },
     // J'injecte dans le "context" notre client sql
     context: ({ req,res }) => {
@@ -90,12 +90,12 @@ const graphQLServer = new ApolloServer({
                 switch(error.name){
                     case "TokenExpiredError":{
                         console.log("Session expired");
-                        // throw new Error("Could not connect to age service");
-                        return {
-                            sqlClient: client,
-                            error: error.name, 
-                            code: 1
-                        };
+                        throw new Error("Session expired");
+                        // throw {
+                        //     sqlClient: client,
+                        //     error: error.name, 
+                        //     code: 1
+                        // };
                     }
                     default:{
                         console.log(error.message);
