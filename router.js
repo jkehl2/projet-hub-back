@@ -112,27 +112,34 @@ router.post('/login-refresh',async (req, res) => {
 
 
 router.post('/token', (req, res) => {
-    const { token } = req.body;
+    const { refreshToken } = req.body;
 
-    if (!token) {
-        return res.json({error:'no token'});
+    if (!refreshToken) {
+        return res.json({error:'no refresh token'});
     }
 
     // if (!refreshTokens.includes(token)) {
     //     return res.sendStatus(403);
     // }
 
-    jwt.verify(token, refreshTokenSecret, (err, user) => {
+    jwt.verify(refreshToken, refreshTokenSecret, (err, user) => {
         if (err) {
             return res.json({error:'refresh token invalid'});
         }
 
-        const accessToken = jwt.sign({ username: user.username, role: user.role }, accessTokenSecret, { expiresIn: '20m' });
+        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: '20m' });
 
-        res.json({
-            accessToken
+        res.status(201).json({
+            token
         });
     });
+});
+
+router.post('/logout', (req, res) => {
+    const { refreshToken } = req.body;
+    refreshTokens = refreshTokens.filter(token => t !== token);
+
+    res.send("Logout successful");
 });
 
 router.post('/upload-avatar', async (req, res) => {
