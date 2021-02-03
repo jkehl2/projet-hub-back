@@ -8,7 +8,7 @@ const seeder = require('./dataSource/seeder')
 
 const accessTokenSecret = 'youraccesstokensecret';
 const refreshTokenSecret = 'yourrefreshtokensecrethere';
-const refreshTokens = [];
+let refreshTokens = [];
 /** Gestion des utilisateurs */
 
 router.get('/',async (req, res) => {
@@ -99,7 +99,8 @@ router.post('/login-refresh',async (req, res) => {
 
         const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret);
         refreshTokens.push(refreshToken);
-        console.log(token)
+        console.log("refresh tokens list")
+        console.log(refreshTokens)
         res.json({
             token,
             refreshToken,
@@ -137,8 +138,9 @@ router.post('/token', (req, res) => {
 
 router.post('/logout', (req, res) => {
     const { refreshToken } = req.body;
-    refreshTokens = refreshTokens.filter(token => t !== token);
-
+    console.log(refreshToken);
+    refreshTokens = refreshTokens.filter(token => token !== refreshToken);
+    console.log(refreshTokens);
     res.send("Logout successful");
 });
 
