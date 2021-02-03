@@ -2,7 +2,8 @@ const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
 const cache = require('./cache');
 const geolib = require('geolib');
-const timestampConverter = require('./timestampConverter')
+const timestampConverter = require('./timestampConverter');
+const { use } = require('../router');
 
 class ProjectDataSource extends DataSource {
 
@@ -60,7 +61,7 @@ class ProjectDataSource extends DataSource {
             timestampConverter.toIso(data.rows);
             return data.rows
         })
-        
+
         this.defineDistance(results, lat, long);
         await this.defineUserRelations(results, user);
         return results;
@@ -235,40 +236,50 @@ class ProjectDataSource extends DataSource {
     });
 
     async defineUserRelations(projects, user){
-        if(projects[0]!== undefined){
-            if (user !== undefined){
-                console.log(`checking relations for user ${user.id}`)
-                const favorites = await this.findFavoritesByUserId(user.id);
-                const projectsIds = favorites.map(favorite => favorite.project_id)
-                projects.forEach(project => {
+        try {
+            if(projects[0]!== undefined){
 
-                    if (projectsIds.includes(project.id)){
-                        project.isFollowed = true;
+                if (user !== undefined){
+                    if(user.expired){
+                        throw {msg:"session expired",code:1}
                     } else {
+
+                    
+                        console.log(`checking relations for user ${user.id}`)
+                        const favorites = await this.findFavoritesByUserId(user.id);
+                        const projectsIds = favorites.map(favorite => favorite.project_id)
+                        projects.forEach(project => {
+
+                            if (projectsIds.includes(project.id)){
+                                project.isFollowed = true;
+                            } else {
+                                project.isFollowed = false;
+                            }
+                            if (project.author === user.id){
+                                project.userIsAuthor = true;
+                            } else {
+                                project.userIsAuthor = false;
+                            }
+                            console.log(`author: ${project.author},user: ${user.id}, userIsAuthor ${project.userIsAuthor}`)
+
+                        });
+                    }
+                } else {
+                    console.log(`user not found`)
+
+                    projects.forEach(project => {
                         project.isFollowed = false;
-                    }
-                    if (project.author === user.id){
-                        project.userIsAuthor = true;
-                    } else {
                         project.userIsAuthor = false;
-                    }
-                    console.log(`author: ${project.author},user: ${user.id}, userIsAuthor ${project.userIsAuthor}`)
+                    })
+                }
 
-                });
+
             } else {
-                console.log(`user not found`)
-
-                projects.forEach(project => {
-                    project.isFollowed = false;
-                    project.userIsAuthor = false;
-                })
+                console.log("project not found")
             }
-
-
-        } else {
-            console.log("project not found")
+        }catch(error){
+            throw error
         }
-
     };
 
     async defineDistance(projects, lat, long){

@@ -12,6 +12,8 @@ let refreshTokens = [];
 const tokenDuration = 5;
 /** Gestion des utilisateurs */
 
+
+
 router.get('/',async (req, res) => {
     res.sendFile('index.html');
 })

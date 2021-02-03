@@ -57,8 +57,35 @@ app.use(fileUpload({
 const accessTokenSecret = 'youraccesstokensecret';
 
 
+
+
 app.use(router);
 // On va venir "créer" notre serveur GraphQL (comme on créérais un router ou l'app express)
+router.all('*', checkExpiration);
+
+function checkExpiration(req, res, next) {
+
+    console.log("checking token expiration")
+    try {
+        const authHeader = req.headers.authorization;
+        if (authHeader) {
+            const token = authHeader.split(' ')[1];
+            jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
+        }
+
+    } catch (error){
+
+
+        if(error.name === "TokenExpiredError"){
+            res.json({error:{msg:"session expired", code:1}})
+            return
+        }
+    }
+
+    next();
+}
+
+
 const graphQLServer = new ApolloServer({
     // On lui donne le schema
     typeDefs: schema,
@@ -66,7 +93,7 @@ const graphQLServer = new ApolloServer({
     resolvers: resolver,
     formatError: (err) => {
         //const error = getErrorCode(err.Message)
-        return { message: err.message, code: 1 }
+        return { message: err.message, id: 400 }
     },
     // J'injecte dans le "context" notre client sql
     context: ({ req,res }) => {
@@ -90,12 +117,12 @@ const graphQLServer = new ApolloServer({
                 switch(error.name){
                     case "TokenExpiredError":{
                         console.log("Session expired");
-                        throw new Error("Session expired");
-                        // throw {
-                        //     sqlClient: client,
-                        //     error: error.name, 
-                        //     code: 1
-                        // };
+                        // throw new Error("Could not connect to age service");
+                        return {
+                            sqlClient: client,
+                            error: error.name, 
+                            code: 1
+                        };
                     }
                     default:{
                         console.log(error.message);
