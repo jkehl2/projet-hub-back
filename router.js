@@ -57,7 +57,7 @@ router.post('/login',async (req, res) => {
             throw "wrong password or email";
         console.log("user found");
         const user = result.rows[0];
-        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 100000});
+        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 10});
         res.json({
             token,
             user
