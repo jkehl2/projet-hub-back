@@ -74,15 +74,14 @@ function checkExpiration(req, res, next) {
         }
 
     } catch (error){
-
-
         if(error.name === "TokenExpiredError"){
             res.json({error:{msg:"session expired", code:1}})
             return
         }
+    } finally {
+        next();
     }
 
-    next();
 }
 
 
