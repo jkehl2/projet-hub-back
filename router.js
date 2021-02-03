@@ -99,8 +99,8 @@ router.post('/login-refresh',async (req, res) => {
 
         const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret);
         refreshTokens.push(refreshToken);
-        console.log("refresh tokens list")
-        console.log(refreshTokens)
+        // console.log("refresh tokens list")
+        // console.log(refreshTokens)
         res.json({
             token,
             refreshToken,
@@ -114,7 +114,7 @@ router.post('/login-refresh',async (req, res) => {
 
 router.post('/token', (req, res) => {
     const { refreshToken } = req.body;
-
+    console.log("refreshing token")
     if (!refreshToken) {
         return res.json({error:'no refresh token'});
     }
@@ -129,7 +129,8 @@ router.post('/token', (req, res) => {
         }
 
         const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: '20m' });
-
+        console.log("refreshing token")
+        console.log(token)
         res.status(201).json({
             token
         });
