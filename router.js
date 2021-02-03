@@ -9,6 +9,7 @@ const seeder = require('./dataSource/seeder')
 const accessTokenSecret = 'youraccesstokensecret';
 const refreshTokenSecret = 'yourrefreshtokensecrethere';
 let refreshTokens = [];
+const tokenDuration = 2;
 /** Gestion des utilisateurs */
 
 router.get('/',async (req, res) => {
@@ -94,7 +95,7 @@ router.post('/login-refresh',async (req, res) => {
             throw "wrong password or email";
         console.log("user found");
         const user = result.rows[0];
-        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: 2});
+        const token = jwt.sign({id: user.id}, accessTokenSecret, {expiresIn: tokenDuration});
 ///////////////////////////////////////
 
         const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret);
@@ -118,17 +119,17 @@ router.post('/token', (req, res) => {
     if (!refreshToken) {
         return res.json({error:'no refresh token'});
     }
-
-    // if (!refreshTokens.includes(refreshTokens)) {
-    //     return res.sendStatus(403).json({error:'refresh token invalid'});
-    // }
+    console.log(refreshTokens)
+    if (!refreshTokens.includes(refreshToken)) {
+        return res.status(403).json({error:'refresh token not valid anymore, please re-login'});
+    }
 
     jwt.verify(refreshToken, refreshTokenSecret, (err, user) => {
         if (err) {
             return res.json({error:'refresh token invalid'});
         }
 
-        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: 2 });
+        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: tokenDuration });
         console.log("sending token")
         console.log(token)
         res.status(201).json({
@@ -139,10 +140,13 @@ router.post('/token', (req, res) => {
 
 router.post('/logout', (req, res) => {
     const { refreshToken } = req.body;
-    console.log(refreshToken);
+    if (!refreshToken) {
+        return res.json({error:'no refresh token'});
+    }
+    console.log(refreshTokens);
     refreshTokens = refreshTokens.filter(token => token !== refreshToken);
     console.log(refreshTokens);
-    res.send("Logout successful");
+    res.json("Logout successful");
 });
 
 router.post('/upload-avatar', async (req, res) => {
