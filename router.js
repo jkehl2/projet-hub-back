@@ -119,9 +119,9 @@ router.post('/token', (req, res) => {
         return res.json({error:'no refresh token'});
     }
 
-    if (!refreshTokens.includes(token)) {
-        return res.sendStatus(403);
-    }
+    // if (!refreshTokens.includes(refreshTokens)) {
+    //     return res.sendStatus(403).json({error:'refresh token invalid'});
+    // }
 
     jwt.verify(refreshToken, refreshTokenSecret, (err, user) => {
         if (err) {
