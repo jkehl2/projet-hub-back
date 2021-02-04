@@ -21,7 +21,6 @@ function tokenCheck(req, res, next) {
 
         if (token === undefined)
                 throw {name:"token not present"}
-        console.log(token)
             
         res.locals.user = jwt.verify(token, process.env.TEMPORARY_TOKEN_SECRET,{ignoreExpiration: false});
         console.log('\x1b[32m%s\x1b[0m', "Token validated, user logged in")

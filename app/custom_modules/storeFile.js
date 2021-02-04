@@ -12,7 +12,7 @@ module.exports = {
 
     async dbUpdate(type, fileName, userId, projectId){
 
-
+        console.log(type, fileName,userId,projectId)
         const fileExtention = fileName.substr(fileName.indexOf("."));
 
         if(type === 'image')

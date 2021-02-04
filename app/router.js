@@ -144,26 +144,23 @@ router.post('/upload-avatar', async (req, res) => {
 router.post('/upload-image', async (req, res) => {
     try {
         if(!req.files) 
-            res.json({
-                status: false,
-                message: 'No file uploaded'
-            });
+            throw {error:{msg:"file is missing", code:5}}
 
-        const authHeader = req.headers.authorization    
-        if (!authHeader) 
-            throw "identification error"
-
-        const token = authHeader.split(' ')[1];
-
-        const accessTokenSecret = 'youraccesstokensecret';
-
-        const user = await jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
-
+        if(!res.locals.user)
+            throw {error:{msg:"authentification problem", code:9}}
+        
+        const user = res.locals.user
+        
         let image = req.files.image;
+
+        if(!req.body.project_id)
+            throw {error:{msg:"project_id is missing", code:6}}
+
+        const projectId = req.body.project_id;
 
         console.log(`uploading file "${image.name}"`);
          
-        const filePath = await storeFile.dbUpdate('image', image.name, user.id)
+        const filePath = await storeFile.dbUpdate('image', image.name, user.id, projectId)
 
         //Use the mv() method to place the file in upload directory (i.e. "uploads")
         image.mv('./public' + filePath);
@@ -187,22 +184,20 @@ router.post('/upload-image', async (req, res) => {
 router.post('/upload-file', async (req, res) => {
     try {
         if(!req.files) 
-            res.json({
-                status: false,
-                message: 'No file uploaded'
-            });
+            throw {error:{msg:"file is missing", code:5}}
 
-        const authHeader = req.headers.authorization    
-        if (!authHeader) 
-            throw "identification error"
+        if(!res.locals.user)
+            throw {error:{msg:"authentification problem", code:9}}
 
-        const token = authHeader.split(' ')[1];
 
-        const accessTokenSecret = 'youraccesstokensecret';
-
-        const user = await jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
-
+        const user = res.locals.user
+        
         let file = req.files.file;
+
+
+        if(!req.body.project_id)
+            throw {error:{msg:"project_id is missing", code:6}}
+
         let projectId = req.body.project_id;
 
         console.log(`uploading file "${file.name}"`);
