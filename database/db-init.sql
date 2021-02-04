@@ -38,8 +38,6 @@ CREATE TABLE projects (
 );
 
 INSERT INTO projects (expiration_date, title, description, location, lat, long, author, archived, image) VALUES
-('2001-09-28 01:00:00','projet test', 'ceci est un projet', 'Paris', 1.00000, 1.00000,1,FALSE, ''),
-('2030-01-02 12:00:00','hold-up', 'braquer la banque du coin', 'Nantes', 2.00000, 2.00000, 2, FALSE, ''),
 ('2021-02-08 12:00:00','Local-hub', 
 'Developper une super appli qui permettra de mettre en relation les acteurs d’un périmètre géographique de même intérêt afin de faciliter le démarrage de projets'
 , 'Coueron', 47.230998, -1.72929, 3, FALSE,

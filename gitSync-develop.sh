@@ -9,10 +9,10 @@ git add .
 git commit -m "$commitName"
 git push
 # Sync parent repo
-cd ..
-git add .
-git commit -m "$commitName"
-git push
-cd $submodule
+# cd ..
+# git add .
+# git commit -m "$commitName"
+# git push
+# cd $submodule
 
 echo "----- sync completed ------"

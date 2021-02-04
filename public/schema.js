@@ -2,14 +2,6 @@ const { gql } = require('apollo-server-express');
 
 const schema = gql`
 
-input NeedInput {
-
-    title: String!
-
-    description: String!
-
-    project_id: ID
-}
 
 
 type Project {
@@ -49,6 +41,8 @@ type Project {
     isFollowed: Boolean
 
     userIsAuthor: Boolean
+
+    distance: Float
 
 }
 
@@ -180,7 +174,6 @@ type Mutation {
         long: Float!,
         image: String,
         file: String,
-        needs: [NeedInput]
     ): ProjectResult
 
     editProject(
@@ -199,9 +192,14 @@ type Mutation {
 
     deleteProject(id: ID!): ProjectResult
 
-    insertNeeds(
-        needs: [NeedInput]
-    ): [NeedResult]
+
+    insertNeed(
+        title: String!
+
+        description: String!
+
+        project_id: ID!
+    ): NeedResult
 
     editNeed(
         id: ID!,

@@ -1,6 +1,6 @@
 ## Get Started
 
-1. Creer une DB postgres nommée 'localhub' (le .env est configuré pour qu'il n'y est pas de owner, peut ne pas fonctionner selon vos paramêtres postgres)
+1. Creer une DB postgres nommée 'localhub' (le .env est configuré pour qu'il n'y est pas de owner, peut ne pas fonctionner selon vos paramêtres postgres). 
 
 ```
 $ psql
@@ -9,24 +9,39 @@ $ psql
     CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 ```
 
-2. Importer le schéma de la DB & les seeds
+2. Install extensions "uuid-ossp" & "pgcrypto" in your localhub database
+```
+$ localhub=#
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+```
+
+
+3. Import DB Schema with seeds
 
 ```
 psql -d localhub -f data/init.sql 
 ```
 
-3. Installer les dépendances
+4. Install npm dependancies
 
 ```
 npm install
 ```
 
-4. Lancer l'appli back
+5. Create your .env using .env.example as template and modify config if necessary
+
+
+6. Start the app
 
 ```
 npm run dev
 ```
 
-5. Executer les requêtes précédées par `#OK ...`
+7. (optionnal) Go to root URL to access documentation
+
+```
+http://localhost:3000/
+```
 
 

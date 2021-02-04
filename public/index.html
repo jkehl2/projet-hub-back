@@ -24,8 +24,9 @@
     <p>Bienvenue sur l'API de localhub</p>
     URI available:
     <ul>
-        <li><b>/login: </b>POST json</li>
-        <!-- <li><b>/logout: </b>POST</li> -->
+        <li><b>/login-refresh: </b>POST json containing "email" & "password" properties</li>
+        <li><b>/token: </b>POST json containing "refreshToken" property</li>
+        <li><b>/logout: </b>POST json containing "refreshToken" property</li>
         <li>
             <b>/upload-avatar: </b>POST Multipart Form containing
             &ltinput type="file" name="avatar"&gt
@@ -57,6 +58,22 @@
         </li>
     </ul>
     <h2>Changelog</h2>
+
+    <h4>Release 2.04.1:</h4>
+    <ul>
+        <li>upload files query fixed</li>
+        <li>refactoring & in code documentation</li>
+    </ul>
+
+    <h4>Release 2.03.1:</h4>
+    <ul>
+        <li>refresh token handling</li>
+    </ul>
+    
+    <h4>Release 2.02.1:</h4>
+    <ul>
+        <li>project.distance property added for sorting results in geo search</li>
+    </ul>
 
     <h4>Release 2.01.3:</h4>
     <ul>
