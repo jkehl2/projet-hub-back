@@ -9,11 +9,18 @@ const seeder = require('./custom_modules/seeder')
 let refreshTokens = [];
 const temporaryTokenDuration = parseInt(process.env.TEMPORARY_TOKEN_DURATION,10) || 1000;
 
-
+/** 
+ * send the API hompage
+ */
 router.get('/',async (req, res) => {
     res.sendFile('index.html');
 })
 
+/**
+ * 
+ * 
+ * 
+ */
 router.get('/seeder/user/:nb',async (req, res) => {
     const nb = req.params.nb;
     const accountsCreated = await seeder.user(nb);
@@ -191,7 +198,7 @@ router.post('/upload-file', async (req, res) => {
 
 
         const user = res.locals.user
-        
+
         let file = req.files.file;
 
 

@@ -1,14 +1,13 @@
 const jwt = require('jsonwebtoken');
 /**
  * Check token presence & validity: 
- * - if token missing => store a res.locals.error message and proceed to next middleware
- * - if token invalid => store a res.locals.error message and proceed to next middleware
- * - if token expired => send an error response to the client
- * - if token valid => store a res.locals.user object and proceed to next middleware
+ * - if token missing || invalid: store a res.locals.error message and proceed to next middleware
+ * - if token expired: send an error response to the client
+ * - if token valid: store a res.locals.user object and proceed to next middleware
  * 
  * @param {Request} req 
  * @param {Response} res 
- * @param {NextFunction} next 
+ * @param {Function} next 
  */
 function tokenCheck(req, res, next) {
 
