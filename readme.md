@@ -5,6 +5,8 @@
 ```
 $ psql
     CREATE DATABASE localhub;
+    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 ```
 
 2. Importer le schéma de la DB & les seeds
@@ -26,3 +28,5 @@ npm run dev
 ```
 
 5. Executer les requêtes précédées par `#OK ...`
+
+

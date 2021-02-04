@@ -1,7 +1,7 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
-const cache = require('./cache');
-const timestampConverter = require('./timestampConverter')
+const cache = require('../custom_modules/cache');
+const timestampConverter = require('../custom_modules/timestampConverter')
 
 
 

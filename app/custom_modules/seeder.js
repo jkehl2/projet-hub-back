@@ -1,5 +1,5 @@
 const faker = require('faker');
-const client = require('./client');
+const client = require('../dataSource/client');
 const axios = require('axios').default;
 const queryString = require('query-string');
 faker.locale = "fr";

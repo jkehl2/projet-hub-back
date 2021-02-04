@@ -1,9 +1,9 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
-const cache = require('./cache');
+const cache = require('../custom_modules/cache');
 const geolib = require('geolib');
-const timestampConverter = require('./timestampConverter');
-const { use } = require('../router');
+const timestampConverter = require('../custom_modules/timestampConverter');
+
 
 class ProjectDataSource extends DataSource {
 

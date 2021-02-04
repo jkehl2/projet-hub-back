@@ -61,7 +61,7 @@ module.exports = {
     async wrapper(key,callback){
 
         // activate / deactivate wrapper
-        if (true === true){
+        if (process.env.CACHE_ENABLED){
             console.log("Cache disabled")
             return callback();
 

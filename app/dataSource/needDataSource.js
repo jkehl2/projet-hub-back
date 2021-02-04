@@ -1,6 +1,6 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
-const cache = require('./cache');
+const cache = require('../custom_modules/cache');
 
 class NeedDataSource extends DataSource {
 

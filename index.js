@@ -1,58 +1,40 @@
+require('dotenv').config();
 const express = require('express');
+const graphQLServer = require('./app/graphQLServer')
+const cache = require('./app/custom_modules/cache');
+const router = require('./app/router');
+const bodyparser = require('body-parser');
 const fileUpload = require('express-fileupload');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const _ = require('lodash');
-
 const app = express();
+const myCors = require('./app/middlewares/myCors')
+const tokenCheck = require('./app/middlewares/tokenCheck')
+const morgan = require('morgan');
 
-// enable files upload
+// Clear cache memory at server start
+cache.flushAll();
+// Console-logging all server's requests
+app.use(morgan('dev'));
+// Apply custom CORS middleware
+app.use(myCors);
+// Define public folder
+app.use(express.static('public'))
+// Allow folder creation during file upload if folders do not exist already
 app.use(fileUpload({
     createParentPath: true
 }));
-
-//add other middleware
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(morgan('dev'));
-
-//start app 
-const port = process.env.PORT || 3000;
-
-app.listen(port, () =>
-  console.log(`App is listening on port ${port}.`)
-);
-
-app.post('/upload-avatar', async (req, res) => {
-  try {
-      if(!req.files) {
-          res.send({
-              status: false,
-              message: 'No file uploaded'
-          });
-      } else {
-          //Use the name of the input field (i.e. "avatar") to retrieve the uploaded file
-          let avatar = req.files.avatar;
-
-          //Use the mv() method to place the file in upload directory (i.e. "uploads")
-          avatar.mv('./public/images/' + avatar.name);
-
-          //send response
-          res.send({
-              status: true,
-              message: 'File is uploaded',
-              data: {
-                  name: avatar.name,
-                  mimetype: avatar.mimetype,
-                  size: avatar.size
-              }
-          });
-      }
-  } catch (err) {
-      res.status(500).send(err);
-  }
+// Enble body content handling forms & json
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({extended: true}));
+// Check authentification token status 
+app.use(tokenCheck);
+// Routing for all non-graphQL requests
+app.use(router);
+// Handle GraphQL requests on route "/graphql" and reapply CORS policy disabled by GraphQL
+graphQLServer.applyMiddleware({ app, cors: {
+    origin: '*',
+    credentials: true
+} });
+// Define server's listening port
+app.listen(process.env.PORT || 3000, () => {
+    console.log('Server running on :', process.env.PORT);
 });
-      
-

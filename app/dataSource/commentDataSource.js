@@ -1,6 +1,6 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
-const timestampConverter = require('./timestampConverter')
+const timestampConverter = require('../custom_modules/timestampConverter')
 
 
 class CommentDataSource extends DataSource {

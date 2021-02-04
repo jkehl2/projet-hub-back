@@ -3,15 +3,11 @@ const router = express.Router();
 const client = require('./dataSource/client');
 const _ = require('lodash');
 const jwt = require('jsonwebtoken');
-const storeFile = require('./dataSource/storeFile');
-const seeder = require('./dataSource/seeder')
+const storeFile = require('./custom_modules/storeFile');
+const seeder = require('./custom_modules/seeder')
 
-const accessTokenSecret = 'youraccesstokensecret';
-const refreshTokenSecret = 'yourrefreshtokensecrethere';
 let refreshTokens = [];
-const temporaryTokenDuration = 180;
-/** Gestion des utilisateurs */
-
+const temporaryTokenDuration = parseInt(process.env.TEMPORARY_TOKEN_DURATION,10) || 1000;
 
 
 router.get('/',async (req, res) => {
@@ -31,8 +27,6 @@ router.get('/seeder/project/:userId/:place/:nb',async (req, res) => {
     const projectsCreated = await seeder.project(userId, place, nb);
     res.json(projectsCreated);
 })
-
-
 
 
 router.post('/login-refresh',async (req, res) => {
@@ -59,19 +53,16 @@ router.post('/login-refresh',async (req, res) => {
 
         if (result.rowCount < 1)
             throw "wrong password or email";
-        console.log("user found");
+        console.log('\x1b[32m%s\x1b[0m',"User found, logging...");
         const user = result.rows[0];
-        console.log(process.env.TEMPORARYTOKENSECRET);
-        const token = jwt.sign({id: user.id}, process.env.TEMPORARYTOKENSECRET, {expiresIn: temporaryTokenDuration});
-///////////////////////////////////////
-
-        const refreshToken = jwt.sign({ id: user.id }, refreshTokenSecret);
+        const token = jwt.sign({id: user.id}, process.env.TEMPORARY_TOKEN_SECRET, {expiresIn: temporaryTokenDuration});
+/////////////////////////////////////// Using optionnal refresh tokens
+        const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
         refreshTokens.push(refreshToken);
-        // console.log("refresh tokens list")
-        // console.log(refreshTokens)
+ /////////////////////////////////////// 
         res.json({
             token,
-            refreshToken,
+            refreshToken, // <-- Using optionnal refresh tokens
             user
         });
     } catch(error) {
@@ -82,7 +73,7 @@ router.post('/login-refresh',async (req, res) => {
 
 router.post('/token', (req, res) => {
     const { refreshToken } = req.body;
-    console.log("refreshing token")
+    console.log("Refreshing token")
     if (!refreshToken) {
         return res.json({error:'no refresh token'});
     }
@@ -91,14 +82,12 @@ router.post('/token', (req, res) => {
         return res.status(403).json({error:'refresh token not valid anymore, please re-login'});
     }
 
-    jwt.verify(refreshToken, refreshTokenSecret, (err, user) => {
+    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) {
             return res.json({error:'refresh token invalid'});
         }
 
-        const token = jwt.sign({ id: user.id }, accessTokenSecret, { expiresIn: temporaryTokenDuration });
-        console.log("sending token")
-        console.log(token)
+        const token = jwt.sign({ id: user.id }, process.env.TEMPORARY_TOKEN_SECRET, { expiresIn: temporaryTokenDuration });
         res.status(201).json({
             token
         });
@@ -119,20 +108,12 @@ router.post('/logout', (req, res) => {
 router.post('/upload-avatar', async (req, res) => {
     try {
         if(!req.files) 
-            res.json({
-                status: false,
-                message: 'No file uploaded'
-            });
+            throw {error:{msg:"file is missing", code:5}}
 
-        const authHeader = req.headers.authorization    
-        if (!authHeader) 
-            throw "identification error"
+        if(!res.locals.user)
+            throw {error:{msg:"authentification problem", code:9}}
 
-        const token = authHeader.split(' ')[1];
-
-        const accessTokenSecret = 'youraccesstokensecret';
-
-        const user = await jwt.verify(token, accessTokenSecret,{ignoreExpiration: false});
+        const user = res.locals.user
 
         let avatar = req.files.avatar;
 
