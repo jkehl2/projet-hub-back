@@ -29,10 +29,9 @@ $ psql -d localhub -f data/init.sql
 $ npm install
 ```
 
-1. Create your .env using .env.example as template and define your database url. You can change other settings if necessary.
+5. Create your .env using .env.example as template and define your database url. You can change other settings if necessary.
 
-
-2. Start the app
+6. Start the app
 
 ```
 $ npm run dev
