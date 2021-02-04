@@ -1,7 +1,7 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
 const cache = require('../custom_modules/cache');
-const timestampConverter = require('../custom_modules/timestampConverter')
+const timestampsToIso = require('../custom_modules/timestampsToIso')
 
 
 
@@ -17,7 +17,7 @@ class UserDataSource extends DataSource {
 
     async findAllUsers() {
         const result = await this.client.query('SELECT * FROM users');
-        timestampConverter.toIso(result.rows);
+        timestampsToIso(result.rows);
         return result.rows;
     }
 
@@ -45,7 +45,7 @@ class UserDataSource extends DataSource {
                     [user.name, user.email, user.password])
                 .catch(error => {throw {msg:error.stack,code:error.code}})
 
-            timestampConverter.toIso(insertion.rows);
+            timestampsToIso(insertion.rows);
             
             return insertion.rows[0];
 
@@ -75,7 +75,7 @@ class UserDataSource extends DataSource {
                 throw {msg:"User not found", code:"10"}
 
 
-            timestampConverter.toIso(update.rows[0]);
+            timestampsToIso(update.rows[0]);
 
             return update.rows[0];
         } catch (error) {
@@ -101,7 +101,7 @@ class UserDataSource extends DataSource {
             if (!update.rows[0])
                 throw {msg:"User not found", code:"10"}
 
-            timestampConverter.toIso(update.rows[0]);
+            timestampsToIso(update.rows[0]);
 
             return update.rows[0];
      } catch (error) {
@@ -125,7 +125,7 @@ class UserDataSource extends DataSource {
             if (!deletion.rows[0])
                 throw {msg:"User not found", code:"10"}
             
-            timestampConverter.toIso(deletion.rows[0]);
+            timestampsToIso(deletion.rows[0]);
             return deletion.rows[0];
 
         } catch (error) {
@@ -142,6 +142,7 @@ class UserDataSource extends DataSource {
         const data = ids.map(id => {
             return result.rows.find( author => author.id == id);
         });
+        timestampsToIso(data);
         return data;
     });
 

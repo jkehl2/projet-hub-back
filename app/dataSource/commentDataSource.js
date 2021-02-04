@@ -1,6 +1,6 @@
 const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
-const timestampConverter = require('../custom_modules/timestampConverter')
+const timestampToIso = require('../custom_modules/timestampsToIso')
 
 
 class CommentDataSource extends DataSource {
@@ -52,7 +52,7 @@ class CommentDataSource extends DataSource {
           const data = ids.map(id => {
                  return result.rows.find( author => author.id == id);
         });
-        timestampConverter.toIso(data);
+        timestampToIso(data);
 
         return data;
     });
@@ -69,7 +69,7 @@ class CommentDataSource extends DataSource {
                return result.rows.filter( comment => comment.project_id == id);
         });
 
-        timestampConverter.toIso(data[0]);
+        timestampToIso(data[0]);
 
         return data;
     });

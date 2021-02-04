@@ -2,7 +2,7 @@ const { DataSource } = require('apollo-datasource');
 const DataLoader = require('dataloader');
 const cache = require('../custom_modules/cache');
 const geolib = require('geolib');
-const timestampConverter = require('../custom_modules/timestampConverter');
+const timestampsToIso = require('../custom_modules/timestampsToIso');
 
 
 class ProjectDataSource extends DataSource {
@@ -18,7 +18,7 @@ class ProjectDataSource extends DataSource {
 
     async findAllProjects(user) {
         const data = await this.client.query('SELECT * FROM projects');
-        timestampConverter.toIso(data.rows);
+        timestampsToIso(data.rows);
 
         await this.defineUserRelations(data.rows, user);
 
@@ -58,7 +58,7 @@ class ProjectDataSource extends DataSource {
                 geoMax.longitude,
                 archived
             ]);
-            timestampConverter.toIso(data.rows);
+            timestampsToIso(data.rows);
             return data.rows
         })
 
@@ -100,7 +100,7 @@ class ProjectDataSource extends DataSource {
                     [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, user.id])
                 .catch(error => {throw {msg:error.stack,code:error.code}})
 
-            timestampConverter.toIso(insertion.rows);
+            timestampsToIso(insertion.rows);
 
             await this.defineUserRelations(insertion.rows, user);
 
@@ -139,7 +139,7 @@ class ProjectDataSource extends DataSource {
                         project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id])
                 .catch(error => {throw {msg:error.stack,code:error.code}})
             
-                timestampConverter.toIso(update.rows);
+                timestampsToIso(update.rows);
 
             await this.defineUserRelations(update.rows, user);
             
@@ -170,7 +170,7 @@ class ProjectDataSource extends DataSource {
                     [project.id])
                 .catch(error => {throw {msg:error.stack,code:error.code}})
             
-                timestampConverter.toIso(update.rows);
+                timestampsToIso(update.rows);
 
             await this.defineUserRelations(update.rows, user);
             
@@ -218,7 +218,7 @@ class ProjectDataSource extends DataSource {
             return result.rows.find( project => project.id == id);
         });
 
-        timestampConverter.toIso(data);
+        timestampsToIso(data);
         return data;
     });
 
@@ -232,11 +232,19 @@ class ProjectDataSource extends DataSource {
         const data = ids.map(id => {
                return result.rows.filter( project => project.author == id);
         });
-        timestampConverter.toIso(data[0]);
+        timestampsToIso(data[0]);
 
       return data;
     });
 
+    /**
+     * Define relations between project queried and the user making queries 
+     * Put 2 boolean properties; .userIsAuthor & .isFollowed, on each project 
+     * of the passed array.
+     * @param {Array} projects an array containing projects
+     * @param {Object} user a user object (may be undefined)
+     * @returns {Array} the array of projects passed in param with added properties
+     */
     async defineUserRelations(projects, user){
         try {
             if(projects[0]!== undefined){
@@ -245,13 +253,10 @@ class ProjectDataSource extends DataSource {
                     if(user.expired){
                         throw {msg:"session expired",code:1}
                     } else {
-
-                    
                         console.log(`checking relations for user ${user.id}`)
                         const favorites = await this.findFavoritesByUserId(user.id);
                         const projectsIds = favorites.map(favorite => favorite.project_id)
                         projects.forEach(project => {
-
                             if (projectsIds.includes(project.id)){
                                 project.isFollowed = true;
                             } else {
@@ -263,11 +268,9 @@ class ProjectDataSource extends DataSource {
                                 project.userIsAuthor = false;
                             }
                             console.log(`author: ${project.author},user: ${user.id}, userIsAuthor ${project.userIsAuthor}`)
-
                         });
                     }
                 } else {
-                    console.log(`user not found`)
 
                     projects.forEach(project => {
                         project.isFollowed = false;
@@ -284,10 +287,13 @@ class ProjectDataSource extends DataSource {
         }
     };
     /**
-     * define distance 
-     * @param {*} projects project object sqdqsd
-     * @param {*} lat 
-     * @param {*} long 
+     * Define distance between search position and projects passed 
+     * Put 1 .distance property of type float, on each project 
+     * of the passed array.
+     * @param {Array} projects an array containing projects
+     * @param {Number} lat search position latiture (float type)
+     * @param {Number} long search position longitude (float type)
+     * @returns {Array} the array of projects passed in param with distance property
      */
     async defineDistance(projects, lat, long){
         if(projects[0]!== undefined){

@@ -6,6 +6,13 @@ faker.locale = "fr";
 
 
 module.exports = {
+    /**
+     * Create <nb> number of user using faker package for
+     * generating random content and store them in DB
+     * 
+     * @param {number} nb 
+     * @returns {Array} array containing created user emails
+     */
     async user(nb){
         try{
             let accountsCreated = []
@@ -41,6 +48,17 @@ module.exports = {
         }
     },
 
+    /**
+     * Create <nb> number of projects with  2 random needs 
+     * around gps coordinates of <place> with <userId> as author Id using faker 
+     * package for generating random content and store them in DB.
+     * Also generates for each project created an
+     * 
+     * @param {Number} userId 
+     * @param {String} place 
+     * @param {Number} nb 
+     * @returns {Array} array containing created projects
+     */
     async project(userId, place, nb){
         try{
             let projectsCreated = []
@@ -51,11 +69,13 @@ module.exports = {
                 const title = faker.lorem.words(4);
                 const description = faker.lorem.paragraph();
                 const expiration_date = faker.date.between('2020-10-01', '2024-01-05')
+                
                 const coordinates = faker.address.nearbyGPSCoordinate([geo.lat, geo.long], 15)
-
                 const lat = parseFloat(coordinates[0]);
                 const long = parseFloat(coordinates[1]);
+
                 const location = await this.convertToAddress(lat, long);
+                
                 const author = userId;
 
 
@@ -100,6 +120,14 @@ module.exports = {
         }
     },
 
+    /**
+     * Determine place name related to provided coordinates
+     * using Nominaim API
+     * 
+     * @param {Number} lat 
+     * @param {Number} long 
+     * @returns {String} name of city or village related to provided coordinates
+     */
     async convertToAddress(lat, long) {
         try{
             console.log("convert geo",lat,long)
@@ -132,36 +160,13 @@ module.exports = {
         }
     },
 
-    async convertToGeo(lat, long) {
-        try{
-            console.log("convert geo",lat,long);
-            const query = queryString.stringifyUrl({
-                url: 'https://nominatim.openstreetmap.org/search',
-                query: {
-                  lat: lat,
-                  lon: long,
-                  format: 'json',
-                  addressdetails: 1,
-                },
-            });
-            
-            const data = await axios
-                .get(query)
-                .catch((error) => {throw error})
-
-            if(data.data.address.city !== undefined)
-                return data.data.address.city
-            if(data.data.address.town !== undefined)
-                return data.data.address.town
-            if(data.data.address.village !== undefined)
-                return data.data.address.village
-            if(data.data.address.locality !== undefined)
-                return data.data.address.locality
-        } catch(error){
-            return error
-        }
-    },
-
+    /**
+     * Determine GPS coordinates related to provided address
+     * using Nominaim API
+     * 
+     * @param {String} address 
+     * @returns {Array} array containing lat & long coordinates
+     */
     async convertToGeo(address) {
         try{
             console.log("convert geo",address)

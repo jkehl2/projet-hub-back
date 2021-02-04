@@ -2,6 +2,14 @@ const client = require('../dataSource/client');
 
 
 module.exports = {
+    /**
+     * Define avatar extention and return avatar name stored in database
+     * using subfunction
+     * 
+     * @param {String} fileName 
+     * @param {Number} userId
+     * @returns {String} stored file name with folder path
+     */
     async dbUpdateAvatar(fileName, userId){
 
         const fileExtention = fileName.substr(fileName.indexOf("."));
@@ -10,6 +18,16 @@ module.exports = {
 
     },
 
+    /**
+     *Define project image or file extention, determine type image or file
+     * and return file name stored in database using subfunction
+     * 
+     * @param {String} type string "image" || "file"
+     * @param {String} fileName original name of file to store
+     * @param {Number} userId 
+     * @param {Number} projectId 
+     * @returns {String} stored file name with folder path
+     */
     async dbUpdate(type, fileName, userId, projectId){
 
         console.log(type, fileName,userId,projectId)
@@ -25,6 +43,13 @@ module.exports = {
             return 'upload type unknown'
     },
 
+    /**
+     * Generate and return an UUID name for the avatar image to store
+     * 
+     * @param {Sting} fileExtention 
+     * @param {Number} userId 
+     * @returns {String} stored file name with folder path
+     */
     async updateAvatar(fileExtention , userId){
         try{
             const update = await client.query(`
@@ -41,6 +66,14 @@ module.exports = {
         }
     },
 
+    /**
+     * Generate and return an UUID name for the project image to store 
+     * while storing it in DB
+     * @param {String} fileExtention 
+     * @param {Number} userId 
+     * @param {Number} projectId 
+     * @returns {String} stored file name with folder path
+     */
     async updateImage(fileExtention , userId, projectId){
         try{
             const update = await client.query(`
@@ -57,6 +90,14 @@ module.exports = {
         }
     },
 
+    /**
+     * Generate and return an UUID name for the project file to store 
+     * while storing it in DB
+     * @param {String} fileExtention 
+     * @param {Number} userId 
+     * @param {Number} projectId 
+     * @returns {String} stored file name with folder path
+     */
     async updateFile(fileExtention , userId, projectId){
         try{
             const update = await client.query(`

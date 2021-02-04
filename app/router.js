@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const client = require('./dataSource/client');
-const _ = require('lodash');
 const jwt = require('jsonwebtoken');
 const storeFile = require('./custom_modules/storeFile');
 const seeder = require('./custom_modules/seeder')
@@ -17,9 +16,7 @@ router.get('/',async (req, res) => {
 })
 
 /**
- * 
- * 
- * 
+ * Seeds the DB with <nb> users
  */
 router.get('/seeder/user/:nb',async (req, res) => {
     const nb = req.params.nb;
@@ -27,6 +24,9 @@ router.get('/seeder/user/:nb',async (req, res) => {
     res.json(accountsCreated);
 })
 
+/**
+ * Seeds the DB with <nb> projects around <place> with <userId> as author
+ */
 router.get('/seeder/project/:userId/:place/:nb',async (req, res) => {
     const nb = req.params.nb;
     const place = req.params.place;
@@ -35,9 +35,13 @@ router.get('/seeder/project/:userId/:place/:nb',async (req, res) => {
     res.json(projectsCreated);
 })
 
-
+/**
+ * Handle logging through JWT
+ * Reads "email" & "password" in request body and search for relevant user and DB
+ * - if user is found: return temporary token, refreshtoken and user infos (in json)
+ * - else: send json response with error detail
+ */
 router.post('/login-refresh',async (req, res) => {
-    // Read username and password from request body
     const { email, password } = req.body;
     try{
         if (!email)
@@ -77,7 +81,12 @@ router.post('/login-refresh',async (req, res) => {
     }
 });
 
-
+/**
+ * Handle token refresh
+ * Reads "refreshToken" in request body and verify it
+ * - if valid: return a new temporary token (in json)
+ * - else: send json response with error detail
+ */
 router.post('/token', (req, res) => {
     const { refreshToken } = req.body;
     console.log("Refreshing token")
@@ -101,6 +110,13 @@ router.post('/token', (req, res) => {
     });
 });
 
+
+/**
+ * Handle logout
+ * Reads "refreshToken" in request body and verify it
+ * - if valid: remove the refreshtoken from authorized list and send successfull message
+ * - else: send error response
+ */
 router.post('/logout', (req, res) => {
     const { refreshToken } = req.body;
     if (!refreshToken) {
@@ -112,6 +128,13 @@ router.post('/logout', (req, res) => {
     res.json("Logout successful");
 });
 
+
+/**
+ * Handle user avatar image upload
+ * Reads file/image in request body and check is user is logged in
+ * - if ok: store the file in public/avatars folder and update user infos in DB
+ * - else: send error response
+ */
 router.post('/upload-avatar', async (req, res) => {
     try {
         if(!req.files) 
@@ -147,7 +170,12 @@ router.post('/upload-avatar', async (req, res) => {
     }
 });
 
-
+/**
+ * Handle project image upload
+ * Reads file/image & project_id in request body and check is user is logged in
+ * - if ok: store the file in public/project-images folder and update project infos in DB
+ * - else: send error response
+ */
 router.post('/upload-image', async (req, res) => {
     try {
         if(!req.files) 
@@ -169,10 +197,8 @@ router.post('/upload-image', async (req, res) => {
          
         const filePath = await storeFile.dbUpdate('image', image.name, user.id, projectId)
 
-        //Use the mv() method to place the file in upload directory (i.e. "uploads")
         image.mv('./public' + filePath);
 
-        //send response
         res.json({
             status: true,
             message: 'File is uploaded',
@@ -188,6 +214,12 @@ router.post('/upload-image', async (req, res) => {
     }
 });
 
+/**
+ * Handle project file upload
+ * Reads file/image & project_id in request body and check is user is logged in
+ * - if ok: store the file in public/project-files folder and update project infos in DB
+ * - else: send error response
+ */
 router.post('/upload-file', async (req, res) => {
     try {
         if(!req.files) 
@@ -211,10 +243,8 @@ router.post('/upload-file', async (req, res) => {
          
         const filePath = await storeFile.dbUpdate('file', file.name, user.id, projectId)
 
-        //Use the mv() method to place the file in upload directory (i.e. "uploads")
         file.mv('./public' + filePath);
 
-        //send response
         res.json({
             status: true,
             message: 'File is uploaded',
