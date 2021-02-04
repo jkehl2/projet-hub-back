@@ -119,7 +119,7 @@ router.post('/upload-avatar', async (req, res) => {
 
         console.log(`uploading file "${avatar.name}"`);
          
-        const filePath = await storeFile.dbUpdate('avatar', avatar.name, user.id)
+        const filePath = await storeFile.dbUpdateAvatar(avatar.name, user.id)
 
         //Use the mv() method to place the file in upload directory (i.e. "uploads")
         avatar.mv('./public' + filePath);
