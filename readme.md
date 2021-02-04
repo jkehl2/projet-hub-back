@@ -20,13 +20,13 @@ $ localhub=#
 3. Import DB Schema with seeds
 
 ```
-psql -d localhub -f data/init.sql 
+$ psql -d localhub -f data/init.sql 
 ```
 
 4. Install npm dependencies
 
 ```
-npm install
+$ npm install
 ```
 
 1. Create your .env using .env.example as template and define your database url. You can change other settings if necessary.
@@ -35,13 +35,13 @@ npm install
 2. Start the app
 
 ```
-npm run dev
+$ npm run dev
 ```
 
 7. (optionnal) Go to root URL to access documentation
 
-```
+
 http://localhost:3000/
-```
+
 
 
