@@ -5,8 +5,6 @@
 ```
 $ psql
     CREATE DATABASE localhub;
-    CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-    CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 ```
 
 2. Install extensions "uuid-ossp" & "pgcrypto" in your localhub database
