@@ -1,6 +1,6 @@
 ## Get Started
 
-1. Creer une DB postgres nommée 'localhub' (le .env est configuré pour qu'il n'y est pas de owner, peut ne pas fonctionner selon vos paramêtres postgres). 
+1. Create a postgres 'localhub' DB
 
 ```
 $ psql
@@ -29,7 +29,7 @@ psql -d localhub -f data/init.sql
 npm install
 ```
 
-5. Create your .env using .env.example as template and modify config if necessary
+5. Create your .env using .env.example as template and define your postgres settings. You can change other settings if necessary.
 
 
 6. Start the app
