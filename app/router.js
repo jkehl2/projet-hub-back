@@ -4,6 +4,7 @@ const client = require('./dataSource/client');
 const jwt = require('jsonwebtoken');
 const storeFile = require('./custom_modules/storeFile');
 const seeder = require('./custom_modules/seeder')
+const tokenCheck = require('./middlewares/tokenCheck')
 
 let refreshTokens = [];
 const temporaryTokenDuration = parseInt(process.env.TEMPORARY_TOKEN_DURATION,10) || 1000;
@@ -47,7 +48,6 @@ router.post('/login-refresh',async (req, res) => {
     try{
         if (!email)
             throw "email/password was not provided";
-
         const result = await client.query(`
             SELECT 
                 id,
@@ -62,11 +62,10 @@ router.post('/login-refresh',async (req, res) => {
                 password = crypt($2, password)
                 `,
             [email, password]);
-
         if (result.rowCount < 1)
             throw "wrong password or email";
         console.log('\x1b[32m%s\x1b[0m',"User found, logging...");
-        console.log(temporaryTokenDuration)
+        const user = result.rows[0];
         const token = jwt.sign({id: user.id}, process.env.TEMPORARY_TOKEN_SECRET, {expiresIn: temporaryTokenDuration});
 /////////////////////////////////////// Using optionnal refresh tokens
         const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);
@@ -78,9 +77,11 @@ router.post('/login-refresh',async (req, res) => {
             user
         });
     } catch(error) {
+        console.log('\x1b[31m%s\x1b[0m', error)
         res.json({"error": error})
     }
 });
+
 
 
 /**
@@ -111,6 +112,9 @@ router.post('/token', (req, res) => {
         });
     });
 });
+
+// Check authentification token status 
+//router.use(tokenCheck);
 
 
 /**
@@ -168,6 +172,8 @@ router.post('/upload-avatar', async (req, res) => {
         });
         
     } catch (err) {
+        console.log('\x1b[31m%s\x1b[0m', err)
+
         res.status(500).json(err);
     }
 });
@@ -212,6 +218,8 @@ router.post('/upload-image', async (req, res) => {
         });
         
     } catch (err) {
+        console.log('\x1b[31m%s\x1b[0m', err)
+
         res.status(500).json(err);
     }
 });
@@ -258,6 +266,7 @@ router.post('/upload-file', async (req, res) => {
         });
         
     } catch (err) {
+        console.log('\x1b[31m%s\x1b[0m', err)
         res.status(500).json(err);
     }
 });
