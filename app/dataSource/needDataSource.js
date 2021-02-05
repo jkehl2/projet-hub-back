@@ -39,7 +39,7 @@ class NeedDataSource extends DataSource {
         try{
             const userCheck = await this.checkUserPermission(need, user);
             if(!userCheck)
-                throw {msg:"Project edit not allowed with this user profile", code:'whatever'};
+                throw {msg:"Project edit not allowed with this user profile", code:'7'};
             const newNeed = await this.client
                 .query(
                     `INSERT INTO needs
@@ -60,7 +60,7 @@ class NeedDataSource extends DataSource {
         try{
             const userCheck = await this.checkUserPermission(need, user);
             if(!userCheck)
-                throw {msg:"Project edit not allowed with this user profile", code:'whatever'};
+                throw {msg:"Project edit not allowed with this user profile", code:'7'};
             const needUpdated = await this.client
             .query(`
                 UPDATE needs
@@ -82,7 +82,7 @@ class NeedDataSource extends DataSource {
         try{
             const userCheck = await this.checkUserPermission(need, user);
             if(!userCheck)
-                throw {msg:"Project edit not allowed with this user profile", code:'whatever'};
+                throw {msg:"Project edit not allowed with this user profile", code:'7'};
             if(userCheck.msg){
                 console.log(userCheck)
                 throw userCheck
@@ -108,7 +108,7 @@ class NeedDataSource extends DataSource {
         try{
             const userCheck = await this.checkUserPermission(need, user);
             if(!userCheck)
-                throw {msg:"Project edit not allowed with this user profile", code:'whatever'};
+                throw {msg:"Project edit not allowed with this user profile", code:'7'};
             if(userCheck.msg){
                 console.log(userCheck)
                 throw userCheck
@@ -135,7 +135,7 @@ class NeedDataSource extends DataSource {
             const userCheck = await this.checkUserPermission(need, user);
 
             if(!userCheck)
-                throw {msg:"Project edit not allowed with this user profile", code:'whatever'};
+                throw {msg:"Project edit not allowed with this user profile", code:'7'};
             const needUpdated = await this.client
             .query(`
                 UPDATE needs
@@ -156,7 +156,7 @@ class NeedDataSource extends DataSource {
         try{
             const userCheck = await this.checkUserPermission(need, user);
             if(!userCheck)
-                throw {msg:"Project edit not allowed with this user profile", code:'whatever'};
+                throw {msg:"Project edit not allowed with this user profile", code:'7'};
 
             const deletion = await this.client
             .query(`
@@ -234,13 +234,12 @@ class NeedDataSource extends DataSource {
     async checkUserPermission(need, user){
         try{
             console.log("checking permission")
-            console.log(need.project_id)
             let projectId;
             if(need.project_id === undefined){
                 console.log("project_id not found")
                 const needToUpdate = await this.findNeedById(need.id)
                 if (needToUpdate === undefined)
-                    throw {msg:"need to update not found", code:"whatever"}
+                    throw {msg:"need to update not found", code:"7"}
                 projectId = needToUpdate.project_id;
 
             }
@@ -253,15 +252,13 @@ class NeedDataSource extends DataSource {
                     'SELECT * FROM projects WHERE id = $1',
                     [projectId]);
             });
-            console.log(projectSearch.rows)
 
             const projectToUpdade = projectSearch.rows[0];
-            console.log(`user ${user.id}`)
             if (!projectToUpdade)
                 throw "project to update not found";
 
             if (projectToUpdade.author !== user.id) {
-                console.log("user not authorized")
+                console.log('\x1b[31m%s\x1b[0m', "user not authorized")
                 return false;
             } else {
                 console.log(`user ${user.id} authorized`)

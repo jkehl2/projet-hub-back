@@ -91,7 +91,7 @@ class ProjectDataSource extends DataSource {
                         expiration_date, 
                         location, 
                         lat, 
-                        long 
+                        long,
                         author)
                     VALUES ($1, $2, $3, $4, $5, $6, $7) 
                     RETURNING *`,
