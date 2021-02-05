@@ -78,6 +78,7 @@ class NeedDataSource extends DataSource {
                 .catch(error => {throw {msg:error.stack,code:error.code}})
             return newFavorite.rows[0];
         } catch (error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         };
 
@@ -97,6 +98,7 @@ class NeedDataSource extends DataSource {
                 .catch(error => {throw {msg:error.stack,code:error.code}})
                 return deletion.rows[0];
         } catch (error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         };
 
@@ -112,6 +114,7 @@ class NeedDataSource extends DataSource {
                 return false;
 
         } catch (error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         };
     }

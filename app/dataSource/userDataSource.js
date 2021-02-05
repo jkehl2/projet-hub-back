@@ -50,6 +50,7 @@ class UserDataSource extends DataSource {
             return insertion.rows[0];
 
         } catch (error) {
+            console.log('\x1b[31m%s\x1b[0m', error)
             if(error.code === "23505")
                 error.msg = "Email already used"
             return{error: error}
@@ -79,6 +80,7 @@ class UserDataSource extends DataSource {
 
             return update.rows[0];
         } catch (error) {
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         }
     };
@@ -105,6 +107,7 @@ class UserDataSource extends DataSource {
 
             return update.rows[0];
      } catch (error) {
+        console.log('\x1b[31m%s\x1b[0m', error)
          return{error: error}
      }
     };
@@ -129,6 +132,7 @@ class UserDataSource extends DataSource {
             return deletion.rows[0];
 
         } catch (error) {
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         }
     };

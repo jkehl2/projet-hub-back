@@ -44,6 +44,7 @@ module.exports = {
             return accountsCreated;
     
         } catch(error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             throw error
         }
     },
@@ -116,6 +117,7 @@ module.exports = {
             return projectsCreated;
     
         } catch(error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             return error
         }
     },
@@ -156,6 +158,7 @@ module.exports = {
                 return data.data.address.locality
 
         } catch(error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             return error
         }
     },
@@ -185,6 +188,7 @@ module.exports = {
                 .catch((error) => {throw error})
             return {lat:data.data[0].lat, long:data.data[0].lon}
         } catch(error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             return error
         }
     }

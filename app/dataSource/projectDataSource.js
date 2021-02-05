@@ -105,6 +105,7 @@ class ProjectDataSource extends DataSource {
 
             return insertion.rows[0];
         } catch (error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         };
     }
@@ -143,6 +144,7 @@ class ProjectDataSource extends DataSource {
 
             return updatedProject;    
         } catch(error) {
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         }
     };
@@ -174,6 +176,7 @@ class ProjectDataSource extends DataSource {
 
             return updatedProject;    
         } catch(error) {
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         }
     };
@@ -199,6 +202,7 @@ class ProjectDataSource extends DataSource {
 
             return deletion.rows[0];
         } catch(error) {
+            console.log('\x1b[31m%s\x1b[0m', error)
             return{error: error}
         }
     };
@@ -279,6 +283,7 @@ class ProjectDataSource extends DataSource {
                 console.log("project not found")
             }
         }catch(error){
+
             throw error
         }
     };

@@ -62,6 +62,7 @@ module.exports = {
 
             return update.rows[0].avatar
         } catch(error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             throw error
         }
     },
@@ -86,6 +87,7 @@ module.exports = {
 
             return update.rows[0].image
         } catch(error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             throw error
         }
     },
@@ -110,6 +112,7 @@ module.exports = {
 
             return update.rows[0].file
         } catch(error){
+            console.log('\x1b[31m%s\x1b[0m', error)
             throw error
         }
     },
