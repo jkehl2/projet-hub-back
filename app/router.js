@@ -4,7 +4,6 @@ const client = require('./dataSource/client');
 const jwt = require('jsonwebtoken');
 const storeFile = require('./custom_modules/storeFile');
 const seeder = require('./custom_modules/seeder')
-const tokenCheck = require('./middlewares/tokenCheck')
 
 let refreshTokens = [];
 const temporaryTokenDuration = parseInt(process.env.TEMPORARY_TOKEN_DURATION,10) || 1000;
