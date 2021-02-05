@@ -66,7 +66,7 @@ router.post('/login-refresh',async (req, res) => {
         if (result.rowCount < 1)
             throw "wrong password or email";
         console.log('\x1b[32m%s\x1b[0m',"User found, logging...");
-        const user = result.rows[0];
+        console.log(temporaryTokenDuration)
         const token = jwt.sign({id: user.id}, process.env.TEMPORARY_TOKEN_SECRET, {expiresIn: temporaryTokenDuration});
 /////////////////////////////////////// Using optionnal refresh tokens
         const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_SECRET);

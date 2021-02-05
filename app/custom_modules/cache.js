@@ -93,7 +93,7 @@ module.exports = {
     async wrapper(key, callback){
 
         // activate / deactivate wrapper
-        if (!process.env.CACHE_ENABLED){
+        if (!process.env.CACHE_ENABLED === false){
             console.log("Redis cache disabled")
             return callback();
 
