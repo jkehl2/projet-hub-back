@@ -1,6 +1,11 @@
 ## Get Started
 
-1. Create a postgres 'localhub' DB
+1. Install Redis
+- on Windows: https://redislabs.com/ebook/appendix-a/a-3-installing-on-windows/a-3-2-installing-redis-on-window/
+- on Ubuntu: https://tecadmin.net/install-redis-ubuntu/
+- on Mac: https://gist.github.com/tomysmile/1b8a321e7c58499ef9f9441b2faa0aa8
+
+2. Create a postgres 'localhub' DB
 
 ```
 $ psql -U postgres

@@ -10,6 +10,7 @@ const myCors = require('./app/middlewares/myCors')
 const tokenCheck = require('./app/middlewares/tokenCheck')
 const morgan = require('morgan');
 
+
 // Clear cache memory at server start
 cache.flushAll();
 
