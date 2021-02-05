@@ -171,9 +171,7 @@ type Mutation {
         expiration_date: String!,
         location: String!,
         lat: Float!,
-        long: Float!,
-        image: String,
-        file: String,
+        long: Float!
     ): ProjectResult
 
     editProject(
@@ -183,9 +181,7 @@ type Mutation {
         expiration_date: String!,
         location: String!,
         lat: Float!,
-        long: Float!,
-        image: String,
-        file: String,
+        long: Float!
     ): ProjectResult
 
     archiveProject(id: ID!): ProjectResult

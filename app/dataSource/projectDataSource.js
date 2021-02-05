@@ -91,13 +91,11 @@ class ProjectDataSource extends DataSource {
                         expiration_date, 
                         location, 
                         lat, 
-                        long, 
-                        image, 
-                        file, 
+                        long 
                         author)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) 
+                    VALUES ($1, $2, $3, $4, $5, $6, $7) 
                     RETURNING *`,
-                    [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, user.id])
+                    [project.title, project.description, project.expiration_date, project.location, project.lat, project.long, user.id])
                 .catch(error => {throw {msg:error.stack,code:error.code}})
 
             timestampsToIso(insertion.rows);
@@ -129,14 +127,12 @@ class ProjectDataSource extends DataSource {
                         expiration_date = $3, 
                         location = $4, 
                         lat = $5, 
-                        long = $6, 
-                        image = $7, 
-                        file = $8
-                    WHERE id = $9
+                        long = $6
+                    WHERE id = $7
                     RETURNING *`,
                     [
                         project.title, 
-                        project.description, project.expiration_date, project.location, project.lat, project.long, project.image, project.file, project.id])
+                        project.description, project.expiration_date, project.location, project.lat, project.long, project.id])
                 .catch(error => {throw {msg:error.stack,code:error.code}})
             
                 timestampsToIso(update.rows);
