@@ -33,7 +33,7 @@ app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended: true}));
 
 // Check authentification token status 
-app.use(tokenCheck);
+app.use(tokenCheck.unless({path:['/token']}));
 
 // Routing for all non-graphQL requests
 app.use(router);

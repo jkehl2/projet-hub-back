@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const unless = require('express-unless');
 /**
  * Check token presence & validity: 
  * - if token missing || invalid: store a res.locals.error message and proceed to next middleware
@@ -38,7 +39,7 @@ function tokenCheck(req, res, next) {
                     console.log('\x1b[33m%s\x1b[0m', "Token is missing, proceeding to next middleware anyway")
                     res.locals.tokenError =  "Not authentificated, this query requires user login"
                     break;
-                } 
+                }
                 default: {
                     console.log('\x1b[33m%s\x1b[0m', "Token is invalid, proceeding to next middleware anyway")
                     res.locals.tokenError =  "Authentification invalid, this query requires user login"
@@ -48,5 +49,7 @@ function tokenCheck(req, res, next) {
     }
 
 }
+
+tokenCheck.unless = unless;
 
 module.exports = tokenCheck;
