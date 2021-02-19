@@ -1,4 +1,8 @@
 node_modules
 public/avatars
 public/project-files
+public/project-images
 .env
+.idea/
+gitSync-develop.sh
+gitSync-mainHeroku.sh
