@@ -1,167 +1,256 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        body{
-            background-color: rgb(035,035,030);
+        body {
+            background-color: rgb(035, 035, 030);
             color: lightgoldenrodyellow;
-            margin: 0 20vh 0 20vh;
-            font-size: 1.2rem;
+
+            font-size: 1rem;
         }
-        h1,h2,h3{
+
+        /* == RESPONSIVE */
+        @media screen and (min-width: 400px) {
+            html {
+                font-size: 100%;
+            }
+
+            section {
+                margin: 0 auto;
+                width: 70%;
+            }
+
+            article {
+                margin: 2rem;
+                padding: 1rem;
+                border-radius: 1rem;
+                border: 1px solid white;
+            }
+        }
+
+        @media screen and (max-width: 400px) {
+            html {
+                font-size: 70%;
+            }
+
+            section {
+                margin: 0 auto;
+                width: 100%;
+            }
+
+            article {
+                margin: 1rem;
+                padding: 0.5rem;
+                border-radius: 1rem;
+                border: 1px solid white;
+            }
+        }
+
+        h1,
+        h2,
+        h3 {
             text-align: center;
         }
-        a{
+
+        a {
             color: lightskyblue;
         }
-      </style>
+
+        li {
+            line-height: 1.5em;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Local Hub</h1>
-    <p>Bienvenue sur l'API de localhub</p>
-    URI available:
-    <ul>
-        <li><b>/login-refresh: </b>POST json containing "email" & "password" properties</li>
-        <li><b>/token: </b>POST json containing "refreshToken" property</li>
-        <li><b>/logout: </b>POST json containing "refreshToken" property</li>
-        <li>
-            <b>/upload-avatar: </b>POST Multipart Form containing
-            &ltinput type="file" name="avatar"&gt
-        </li>
-        <li>
-            <b>/upload-file: </b>POST Multipart Form containing
-            &ltinput type="file" name="file"&gt and &ltinput type="number" name="project_id"&gt
-        </li>
-        <li>
-            <b>/upload-image: </b>POST Multipart Form containing
-            &ltinput type="file" name="image"&gt and &ltinput type="number" name="project_id"&gt
-        </li>
-        <li>
-            <b>/seeder/user/&lt<i>n</i>&gt </b>GET, seeds database with &lt<i>n</i>&gt users, returns an json array containing created emails addresses
-        </li>
-        <li>
-            <b>/seeder/project/&lt<i>user_id</i>&gt/&lt<i>place</i>&gt/&lt<i>n</i>&gt </b>GET, seeds database with &lt<i>n</i>&gt projects around location &lt<i>place</i>&gt from author &lt<i>user_id</i>&gt, returns an json array containing created project objects including 2 needs for each project
-        </li>
-        <li>
-            <b>/graphql :</b>
-            POST graphql queries 
+    <section>
+        <h1>Local Hub</h1>
+        <strong>Bienvenue sur l'API de localhub</strong>
+
+        <article>
+            <h2>URL availables</h2>
             <ul>
-                <li><a href="/schema.js">Schema</a></li>
-                <li><a href="/requests/projects.graphqls">projects queries list</a></li>
-                <li><a href="/requests/users.graphqls">users queries list</a></li>
-                <li><a href="/requests/favorites.graphqls">favorites queries list</a></li>
-                <li><a href="/requests/needs.graphqls">needs queries list</a></li> 
+                <li><b>/login-refresh: </b>POST json containing "email" & "password" properties</li>
+                <li><b>/token: </b>POST json containing "refreshToken" property</li>
+                <li><b>/logout: </b>POST json containing "refreshToken" property</li>
+                <li>
+                    <b>/upload-avatar: </b>POST Multipart Form containing
+                    &ltinput type="file" name="avatar"&gt
+                </li>
+                <li>
+                    <b>/upload-file: </b>POST Multipart Form containing
+                    &ltinput type="file" name="file"&gt and &ltinput type="number" name="project_id"&gt
+                </li>
+                <li>
+                    <b>/upload-image: </b>POST Multipart Form containing
+                    &ltinput type="file" name="image"&gt and &ltinput type="number" name="project_id"&gt
+                </li>
+                <li>
+                    <b>/seeder/user/&lt<i>n</i>&gt </b>GET, seeds database with &lt<i>n</i>&gt users, returns an json
+                    array
+                    containing created emails addresses
+                </li>
+                <li>
+                    <b>/seeder/project/&lt<i>user_id</i>&gt/&lt<i>place</i>&gt/&lt<i>n</i>&gt </b>GET, seeds database
+                    with
+                    &lt<i>n</i>&gt projects around location &lt<i>place</i>&gt from author &lt<i>user_id</i>&gt, returns
+                    an
+                    json array containing created project objects including 2 needs for each project
+                </li>
+                <li>
+                    <b>/graphql :</b>
+                    POST graphql queries
+                    <ul>
+                        <li><a href="/schema.js">Schema</a></li>
+                        <li><a href="/requests/projects.graphqls">projects queries list</a></li>
+                        <li><a href="/requests/users.graphqls">users queries list</a></li>
+                        <li><a href="/requests/favorites.graphqls">favorites queries list</a></li>
+                        <li><a href="/requests/needs.graphqls">needs queries list</a></li>
+                    </ul>
+                </li>
             </ul>
-        </li>
-    </ul>
-    <h2>Changelog</h2>
+        </article>
+        <article>
+            <h2>Changelog</h2>
 
-    <h4>Release 2.04.1:</h4>
-    <ul>
-        <li>upload files query fixed</li>
-        <li>refactoring & in code documentation</li>
-    </ul>
+            <h4>Release 2.04.1 :</h4>
+            <ul>
+                <li>upload files query fixed</li>
+                <li>refactoring & in code documentation</li>
+            </ul>
 
-    <h4>Release 2.03.1:</h4>
-    <ul>
-        <li>refresh token handling</li>
-    </ul>
-    
-    <h4>Release 2.02.1:</h4>
-    <ul>
-        <li>project.distance property added for sorting results in geo search</li>
-    </ul>
+            <details>
+                <summary>Release 2.03.1 :</summary>
+                <ul>
+                    <li>refresh token handling</li>
+                </ul>
+            </details>
 
-    <h4>Release 2.01.3:</h4>
-    <ul>
-        <li>project seeder improved</li>
-    </ul>
+            <details>
+                <summary>Release 2.02.1 :</summary>
+                <ul>
+                    <li>project.distance property added for sorting results in geo search</li>
+                </ul>
+            </details>
 
-    <h4>Release 2.01.2:</h4>
-    <ul>
-        <li>mutation insertNeed() added</li>
-    </ul>
+            <details>
+                <summary>Release 2.01.3 :</summary>
+                <ul>
+                    <li>project seeder improved</li>
+                </ul>
+            </details>
 
-    <h4>Release 2.01.1:</h4>
-    <ul>
-        <li>seeders added</li>
-    </ul>
+            <details>
+                <summary>Release 2.01.2 :</summary>
+                <ul>
+                    <li>mutation insertNeed() added</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.31.1:</h4>
-    <ul>
-        <li>insertFavorite/deleteFavorite mutations added (please check <a href="/requests/projects.graphqls">favorite queries list</a>)</li>
-        <li>myInfos query added</li>
-    </ul>
+            <details>
+                <summary>Release 2.01.1 :</summary>
+                <ul>
+                    <li>seeders added</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.30.1:</h4>
-    <ul>
-        <li>Handling errors enabled for Needs & Projects mutations (queries syntax changed, please check <a href="/requests/projects.graphqls">projects queries list</a>)</li>
-        <li>archiveProject mutation added</li>
-        <li>needCompletion mutation added</li>
-    </ul>
+            <details>
+                <summary>Release 1.31.1 :</summary>
+                <ul>
+                    <li>insertFavorite/deleteFavorite mutations added (please check <a
+                            href="/requests/projects.graphqls">favorite queries list</a>)</li>
+                    <li>myInfos query added</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.29.1:</h4>
-    <ul>
-        <li>CORS updated</li>
-        <li>User indentification switch from session to token</li>
-        <li>Handling errors enabled for Users mutations (queries syntax changed, please check <a href="/requests/users.graphqls">users queries list</a>)</li>
-    </ul>
+            <details>
+                <summary>Release 1.30.1 :</summary>
+                <ul>
+                    <li>Handling errors enabled for Needs & Projects mutations (queries syntax changed, please check <a
+                            href="/requests/projects.graphqls">projects queries list</a>)</li>
+                    <li>archiveProject mutation added</li>
+                    <li>needCompletion mutation added</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.27.2:</h4>
-    <ul>
-        <li>needs creation with [array] added</li>
-        <li>bug fixes on queries delete/edit need</li>
-        <li> 
-            <a href="/requests/projects.graphqls">doc for needs queries added</a>
-        </li>
-        <li>attributes userIsAuthor & isFollowed added on return projects</li>
-        <li> <b>createProject query updated</b> (author field removed)</li>
-    </ul>
+            <details>
+                <summary>Release 1.29.1 :</summary>
+                <ul>
+                    <li>CORS updated</li>
+                    <li>User indentification switch from session to token</li>
+                    <li>Handling errors enabled for Users mutations (queries syntax changed, please check <a
+                            href="/requests/users.graphqls">users queries list</a>)</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.27.1:</h4>
-    <ul>
-        <li>
-            {favorites} added on users queries
-            (-> <a href="/requests/users.graphqls">see doc.</a>)
-        </li>
-        <li>
-            {followers} added on project queries
-            (-> <a href="/requests/projects.graphqls">see doc.</a>)
-        </li>
-        <li>returned dates all converted to Iso</li>
-        <li>various fixes</li>
-    </ul>
+            <details>
+                <summary>Release 1.27.2 :</summary>
+                <ul>
+                    <li>needs creation with [array] added</li>
+                    <li>bug fixes on queries delete/edit need</li>
+                    <li>
+                        <a href="/requests/projects.graphqls">doc for needs queries added</a>
+                    </li>
+                    <li>attributes userIsAuthor & isFollowed added on return projects</li>
+                    <li> <b>createProject query updated</b> (author field removed)</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.26.1:</h4>
-    <ul>
-        <li>projectsByGeo with {archived: true} fixed</li>
-    </ul>
+            <details>
+                <summary>Release 1.27.1 :</summary>
+                <ul>
+                    <li>
+                        {favorites} added on users queries
+                        (-> <a href="/requests/users.graphqls">see doc.</a>)
+                    </li>
+                    <li>
+                        {followers} added on project queries
+                        (-> <a href="/requests/projects.graphqls">see doc.</a>)
+                    </li>
+                    <li>returned dates all converted to Iso</li>
+                    <li>various fixes</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.24.1:</h4>
-    <ul>
-        <li>editProject query added</li>
-        <li>deleteProject query added</li>
-        <li>
-            <b>/!\ queries user create/delete/edit updated </b>
-            (-> <a href="/requests/users.graphqls">see doc.</a>)
-        </li>
-        <li>users email now unique</li>
-    </ul>
+            <details>
+                <summary>Release 1.26.1 :</summary>
+                <ul>
+                    <li>projectsByGeo with {archived: true} fixed</li>
+                </ul>
+            </details>
 
-    <h4>Release 1.23.1:</h4>
-    <ul>
-        <li>
-            insertProject Query added (query list updated)
-        </li>
-        <li>
-            projectsByAuthor Query fixed
-        </li>
-    </ul>
+            <details>
+                <summary>Release 1.24.1 :</summary>
+                <ul>
+                    <li>editProject query added</li>
+                    <li>deleteProject query added</li>
+                    <li>
+                        <b>/!\ queries user create/delete/edit updated </b>
+                        (-> <a href="/requests/users.graphqls">see doc.</a>)
+                    </li>
+                    <li>users email now unique</li>
+                </ul>
+            </details>
 
-    
+            <details>
+                <summary>Release 1.23.1 :</summary>
+                <ul>
+                    <li>
+                        insertProject Query added (query list updated)
+                    </li>
+                    <li>
+                        projectsByAuthor Query fixed
+                    </li>
+                </ul>
+            </details>
+
+        </article>
+    </section>
+
 </body>
-</html>
 
+</html>
