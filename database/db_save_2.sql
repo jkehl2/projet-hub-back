@@ -1,6 +1,6 @@
 BEGIN;
 
-DROP TABLE IF EXISTS favorites, comments, needs, projects, users;
+DROP TABLE IF EXISTS favorites, needs, projects, users;
 
 CREATE TABLE users (
     id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -37,15 +37,6 @@ CREATE TABLE needs (
     description TEXT NOT NULL,
     completed BOOLEAN DEFAULT FALSE,
     project_id INT REFERENCES projects(id) ON DELETE CASCADE
-);
-
-CREATE TABLE comments (
-    id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    content TEXT NOT NULL,
-    project_id INT REFERENCES projects(id) ON DELETE CASCADE,
-    author INT REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE favorites (
@@ -124,14 +115,6 @@ COPY public.projects (id, created_at, updated_at, expiration_date, title, descri
 
 
 --
--- Data for Name: comments; Type: TABLE DATA; Schema: public; Owner: localhub
---
-
-COPY public.comments (id, created_at, updated_at, content, project_id, author) FROM stdin;
-\.
-
-
---
 -- Data for Name: favorites; Type: TABLE DATA; Schema: public; Owner: localhub
 --
 
@@ -197,13 +180,6 @@ COPY public.needs (id, created_at, updated_at, title, description, completed, pr
 29	2021-02-08 09:47:36.667766+00	2021-02-08 09:47:36.667766+00	Sculpteur sur granit	Sculpteur sur granit équipé d'une lime et n'ayant pas le vertige.	t	19
 5	2021-02-07 17:41:10.318156+00	2021-02-07 17:41:10.318156+00	Des parents motivé par le projet	Pour donner naissance à ce beau projet nous avons besoin de réunir 5 parents d'élèves qui siègerons au bureau d'administration de l'école.	f	4
 \.
-
-
---
--- Name: comments_id_seq; Type: SEQUENCE SET; Schema: public; Owner: localhub
---
-
-SELECT pg_catalog.setval('public.comments_id_seq', 1, false);
 
 
 --
